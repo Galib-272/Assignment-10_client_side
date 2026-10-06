@@ -98,15 +98,19 @@ export default function ManageTicketsPage() {
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [actionLoadingId, setActionLoadingId] = useState(null);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchTickets = async () => {
     try {
       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/tickets`, {
         headers: { Authorization: `Bearer ${session?.accessToken}`, "x-user-email": session?.user?.email || "", "x-user-role": session?.user?.role || "" },
       });
-      setTickets(res.data);
+      const data = Array.isArray(res.data) ? res.data : (Array.isArray(res.data?.tickets) ? res.data.tickets : mockTickets);
+      setTickets(data);
+      setTotalCount(data.length);
     } catch {
       setTickets(mockTickets);
+      setTotalCount(mockTickets.length);
     } finally {
       setLoading(false);
     }
