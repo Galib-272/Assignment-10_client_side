@@ -484,3 +484,47 @@ body {
   color: var(--text-secondary);
   border: 1px solid var(--border-color);
 }
+
+/* Responsive Navbar Utilities */
+.nav-desktop-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-desktop-auth {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-mobile-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .nav-desktop-links {
+    display: none !important;
+  }
+  .nav-desktop-auth {
+    display: none !important;
+  }
+  .nav-mobile-btn {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .nav-desktop-links {
+    display: flex !important;
+  }
+  .nav-desktop-auth {
+    display: flex !important;
+  }
+  .nav-mobile-btn {
+    display: none !important;
+  }
+}
+

@@ -57,7 +57,7 @@ export default function Navbar() {
             : "rgba(255, 255, 255, 0.75)",
         backdropFilter: "blur(20px)",
         borderBottom: `1px solid ${scrolled ? "var(--border-color)" : "transparent"}`,
-        padding: "0 24px",
+        padding: "0 16px",
       }}
     >
       <div
@@ -89,7 +89,7 @@ export default function Navbar() {
           <span
             style={{
               fontFamily: "Space Grotesk, sans-serif",
-              fontSize: "22px",
+              fontSize: "20px",
               fontWeight: "800",
               background: "linear-gradient(135deg, #00d4ff, #7c3aed)",
               WebkitBackgroundClip: "text",
@@ -102,7 +102,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop Nav Links */}
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }} className="hidden md:flex">
+        <div className="nav-desktop-links">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -179,7 +179,7 @@ export default function Navbar() {
 
           {/* Auth buttons / User menu */}
           {!session ? (
-            <div className="hidden md:flex" style={{ gap: "10px", display: "flex" }}>
+            <div className="nav-desktop-auth">
               <Link href="/login">
                 <button className="btn-outline" style={{ padding: "9px 22px", fontSize: "14px" }}>
                   Login
@@ -192,7 +192,7 @@ export default function Navbar() {
               </Link>
             </div>
           ) : (
-            <div ref={dropdownRef} style={{ position: "relative" }}>
+            <div ref={dropdownRef} className="nav-desktop-auth" style={{ position: "relative" }}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 style={{
@@ -280,78 +280,200 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* Mobile hamburger */}
+          {/* Mobile hamburger button */}
           <button
-            className="md:hidden"
+            className="nav-mobile-btn"
             onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle navigation menu"
             style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px",
-              width: "38px",
-              height: "38px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              background: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)",
+              border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)"}`,
+              borderRadius: "10px",
+              width: "40px",
+              height: "40px",
               cursor: "pointer",
               color: "var(--text-primary)",
+              transition: "all 0.2s",
             }}
           >
-            {mobileOpen ? <FaTimes size={16} /> : <FaBars size={16} />}
+            {mobileOpen ? <FaTimes size={18} /> : <FaBars size={18} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu Drawer */}
       {mobileOpen && (
         <div
           style={{
             background: isDark ? "rgba(5, 8, 26, 0.98)" : "rgba(255, 255, 255, 0.98)",
             backdropFilter: "blur(20px)",
             borderTop: "1px solid var(--border-color)",
-            padding: "16px 24px 24px",
+            padding: "20px 20px 28px",
+            animation: "fadeIn 0.2s ease-out",
           }}
         >
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMobileOpen(false)}
+          {/* User profile banner if logged in */}
+          {session ? (
+            <div
               style={{
-                display: "block",
-                color: "var(--text-secondary)",
-                textDecoration: "none",
-                padding: "12px 0",
-                fontWeight: "500",
-                borderBottom: "1px solid rgba(255,255,255,0.04)",
-                transition: "color 0.2s",
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                padding: "12px 14px",
+                background: "var(--bg-surface2)",
+                borderRadius: "12px",
+                border: "1px solid var(--border-color)",
+                marginBottom: "16px",
               }}
             >
-              {link.label}
-            </Link>
-          ))}
-          {session && (
-            <Link href="/dashboard" onClick={() => setMobileOpen(false)}
-              style={{ display: "block", color: "var(--text-secondary)", textDecoration: "none", padding: "12px 0", fontWeight: "500", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-              Dashboard
-            </Link>
-          )}
-          {!session ? (
-            <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-              <Link href="/login" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
-                <button className="btn-outline" style={{ width: "100%" }}>Login</button>
+              <img
+                src={session.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=50`}
+                alt={session.user?.name || "User Avatar"}
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=50`;
+                }}
+                style={{ width: "42px", height: "42px", borderRadius: "50%", objectFit: "cover" }}
+              />
+              <div style={{ overflow: "hidden" }}>
+                <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {session.user?.name}
+                </div>
+                <div style={{ fontSize: "12px", color: "var(--text-muted)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {session.user?.email}
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {/* Navigation Links */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  color: "var(--text-primary)",
+                  textDecoration: "none",
+                  padding: "12px 14px",
+                  borderRadius: "10px",
+                  fontWeight: "600",
+                  fontSize: "15px",
+                  background: "rgba(255,255,255,0.03)",
+                  transition: "all 0.2s",
+                }}
+              >
+                <span>{link.label}</span>
+                <span style={{ color: "var(--color-primary)" }}>→</span>
               </Link>
-              <Link href="/register" onClick={() => setMobileOpen(false)} style={{ flex: 1 }}>
-                <button className="btn-primary" style={{ width: "100%" }}>Register</button>
+            ))}
+
+            {session && (
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileOpen(false)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    color: "var(--text-primary)",
+                    textDecoration: "none",
+                    padding: "12px 14px",
+                    borderRadius: "10px",
+                    fontWeight: "600",
+                    fontSize: "15px",
+                    background: "rgba(255,255,255,0.03)",
+                  }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <FaTachometerAlt size={14} color="#00d4ff" /> Dashboard
+                  </span>
+                  <span style={{ color: "var(--color-primary)" }}>→</span>
+                </Link>
+                <Link
+                  href="/dashboard/profile"
+                  onClick={() => setMobileOpen(false)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    color: "var(--text-primary)",
+                    textDecoration: "none",
+                    padding: "12px 14px",
+                    borderRadius: "10px",
+                    fontWeight: "600",
+                    fontSize: "15px",
+                    background: "rgba(255,255,255,0.03)",
+                  }}
+                >
+                  <span style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <FaUser size={14} color="#7c3aed" /> My Profile
+                  </span>
+                  <span style={{ color: "var(--color-primary)" }}>→</span>
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Login & Register buttons in Mobile Drawer */}
+          {!session ? (
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginTop: "20px" }}>
+              <Link href="/login" onClick={() => setMobileOpen(false)} style={{ textDecoration: "none" }}>
+                <button
+                  className="btn-outline"
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    justifyContent: "center",
+                    borderRadius: "10px",
+                  }}
+                >
+                  Login
+                </button>
+              </Link>
+              <Link href="/register" onClick={() => setMobileOpen(false)} style={{ textDecoration: "none" }}>
+                <button
+                  className="btn-primary"
+                  style={{
+                    width: "100%",
+                    padding: "12px",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    justifyContent: "center",
+                    borderRadius: "10px",
+                  }}
+                >
+                  Register
+                </button>
               </Link>
             </div>
           ) : (
             <button
               onClick={() => { signOut({ callbackUrl: "/" }); setMobileOpen(false); }}
               className="btn-danger"
-              style={{ width: "100%", marginTop: "16px" }}
+              style={{
+                width: "100%",
+                marginTop: "20px",
+                padding: "12px",
+                fontSize: "14px",
+                fontWeight: "600",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "8px",
+                borderRadius: "10px",
+              }}
             >
-              Logout
+              <FaSignOutAlt size={14} /> Logout
             </button>
           )}
         </div>
