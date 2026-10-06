@@ -1,17 +1,18 @@
 "use client";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Link from "next/link";
 import TicketCard from "@/components/tickets/TicketCard";
-import { FaBullhorn } from "react-icons/fa";
+import { FaBullhorn, FaArrowRight } from "react-icons/fa";
 
 // Mock data for when API is not yet connected
 const mockAdvertised = [
-  { _id: "1", title: "Dhaka to Chittagong Express", from: "Dhaka", to: "Chittagong", price: 850, transportType: "Bus", quantity: 45, perks: ["AC", "WiFi", "Snacks"], image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=200&fit=crop" },
-  { _id: "2", title: "Dhaka to Cox's Bazar Direct", from: "Dhaka", to: "Cox's Bazar", price: 1200, transportType: "Bus", quantity: 30, perks: ["AC", "Breakfast", "Movie"], image: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=200&fit=crop" },
-  { _id: "3", title: "Dhaka to Sylhet Intercity", from: "Dhaka", to: "Sylhet", price: 450, transportType: "Train", quantity: 120, perks: ["AC", "Dining Car"], image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400&h=200&fit=crop" },
-  { _id: "4", title: "Dhaka to Barishal Launch", from: "Dhaka", to: "Barishal", price: 350, transportType: "Launch", quantity: 200, perks: ["Cabin", "Restaurant"], image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=200&fit=crop" },
-  { _id: "5", title: "Dhaka to Rajshahi Flight", from: "Dhaka", to: "Rajshahi", price: 3500, transportType: "Plane", quantity: 60, perks: ["Meal", "Lounge"], image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=200&fit=crop" },
-  { _id: "6", title: "Dhaka to Khulna Express", from: "Dhaka", to: "Khulna", price: 600, transportType: "Train", quantity: 80, perks: ["AC", "Breakfast"], image: "https://images.unsplash.com/photo-1565793279042-ab0ddf5a57f0?w=400&h=200&fit=crop" },
+  { _id: "1", title: "Dhaka to Chittagong Express", from: "Dhaka", to: "Chittagong", price: 850, transportType: "bus", quantity: 45, perks: ["AC", "WiFi", "Snacks"], image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=200&fit=crop" },
+  { _id: "2", title: "Dhaka to Cox's Bazar Direct", from: "Dhaka", to: "Cox's Bazar", price: 1200, transportType: "bus", quantity: 30, perks: ["AC", "Breakfast", "Movie"], image: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=200&fit=crop" },
+  { _id: "3", title: "Dhaka to Sylhet Intercity", from: "Dhaka", to: "Sylhet", price: 450, transportType: "train", quantity: 120, perks: ["AC", "Dining Car"], image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400&h=200&fit=crop" },
+  { _id: "4", title: "Dhaka to Barishal Launch", from: "Dhaka", to: "Barishal", price: 350, transportType: "launch", quantity: 200, perks: ["Cabin", "Restaurant"], image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=200&fit=crop" },
+  { _id: "5", title: "Dhaka to Rajshahi Flight", from: "Dhaka", to: "Rajshahi", price: 3500, transportType: "plane", quantity: 60, perks: ["Meal", "Lounge"], image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=200&fit=crop" },
+  { _id: "6", title: "Dhaka to Khulna Express", from: "Dhaka", to: "Khulna", price: 600, transportType: "train", quantity: 80, perks: ["AC", "Breakfast"], image: "https://images.unsplash.com/photo-1565793279042-ab0ddf5a57f0?w=400&h=200&fit=crop" },
 ];
 
 export default function AdvertisedTickets() {
@@ -22,7 +23,8 @@ export default function AdvertisedTickets() {
     const fetchAdvertised = async () => {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets/advertised`);
-        setTickets(res.data.slice(0, 6));
+        const data = Array.isArray(res.data) ? res.data : [];
+        setTickets(data.length > 0 ? data.slice(0, 6) : mockAdvertised);
       } catch {
         setTickets(mockAdvertised);
       } finally {
@@ -71,11 +73,21 @@ export default function AdvertisedTickets() {
             ))}
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "24px" }}>
-            {tickets.map((ticket) => (
-              <TicketCard key={ticket._id} ticket={ticket} />
-            ))}
-          </div>
+          <>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "24px" }}>
+              {tickets.map((ticket) => (
+                <TicketCard key={ticket._id} ticket={ticket} />
+              ))}
+            </div>
+            {/* View All CTA */}
+            <div style={{ textAlign: "center", marginTop: "48px" }}>
+              <Link href="/tickets">
+                <button className="btn-accent" style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "14px 36px", fontSize: "15px" }}>
+                  Browse All Tickets <FaArrowRight size={13} />
+                </button>
+              </Link>
+            </div>
+          </>
         )}
       </div>
     </section>
