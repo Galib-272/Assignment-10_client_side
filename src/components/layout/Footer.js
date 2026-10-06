@@ -23,7 +23,7 @@ export default function Footer() {
             paddingBottom: "48px",
           }}
         >
-          {/* Column 1: Logo + Description */}
+          {/* Column 1: Logo + Description + Newsletter */}
           <div>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
               <div
@@ -54,17 +54,20 @@ export default function Footer() {
               </span>
             </div>
             <p style={{ color: "var(--text-secondary)", fontSize: "14px", lineHeight: "1.7", marginBottom: "20px" }}>
-              Book bus, train, launch & flight tickets easily. Your journey starts here — safe, fast, and hassle-free.
+              Book bus, train, launch & flight tickets across Bangladesh easily. Safe, transparent, and hassle-free travel booking.
             </p>
             {/* Social links */}
-            <div style={{ display: "flex", gap: "10px" }}>
+            <div style={{ display: "flex", gap: "10px", marginBottom: "24px" }}>
               {[
-                { icon: <FaFacebook size={16} />, href: "#" },
-                { icon: <FaXTwitter size={16} />, href: "#" },
+                { icon: <FaFacebook size={16} />, href: "https://facebook.com", label: "Facebook" },
+                { icon: <FaXTwitter size={16} />, href: "https://twitter.com", label: "Twitter" },
               ].map((s, i) => (
                 <a
                   key={i}
                   href={s.href}
+                  aria-label={s.label}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   style={{
                     width: "36px",
                     height: "36px",
@@ -98,14 +101,14 @@ export default function Footer() {
           {/* Column 2: Quick Links */}
           <div>
             <h4 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "20px", fontFamily: "Space Grotesk, sans-serif" }}>
-              Quick Links
+              Quick Navigation
             </h4>
             <ul style={{ listStyle: "none", display: "flex", flexDirection: "column", gap: "10px" }}>
               {[
                 { href: "/", label: "Home" },
-                { href: "/tickets", label: "All Tickets" },
-                { href: "/contact", label: "Contact Us" },
-                { href: "/about", label: "About" },
+                { href: "/tickets", label: "Explore Tickets" },
+                { href: "/dashboard/my-bookings", label: "My Bookings" },
+                { href: "/dashboard/profile", label: "User Profile" },
               ].map((link) => (
                 <li key={link.href}>
                   <Link
@@ -124,13 +127,13 @@ export default function Footer() {
           {/* Column 3: Contact Info */}
           <div>
             <h4 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "20px", fontFamily: "Space Grotesk, sans-serif" }}>
-              Contact Info
+              Help & Support
             </h4>
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               {[
                 { icon: <FaEnvelope size={14} />, text: "support@ticketbari.com" },
                 { icon: <FaPhone size={14} />, text: "+880 1700-000000" },
-                { icon: <FaFacebook size={14} />, text: "facebook.com/ticketbari" },
+                { icon: <FaFacebook size={14} />, text: "fb.com/ticketbari" },
               ].map((item, i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                   <span style={{ color: "var(--color-primary)" }}>{item.icon}</span>
@@ -143,10 +146,10 @@ export default function Footer() {
           {/* Column 4: Payment Methods */}
           <div>
             <h4 style={{ fontSize: "16px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "20px", fontFamily: "Space Grotesk, sans-serif" }}>
-              Payment Methods
+              Secured Payments
             </h4>
             <p style={{ color: "var(--text-secondary)", fontSize: "13px", marginBottom: "14px" }}>
-              We use industry-leading payment security
+              Guaranteed SSL encrypted instant checkout
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <div
@@ -162,8 +165,8 @@ export default function Footer() {
               >
                 <FaStripe size={28} color="#6772e5" />
                 <div>
-                  <div style={{ color: "var(--text-primary)", fontSize: "13px", fontWeight: "600" }}>Stripe</div>
-                  <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>Secure Payment</div>
+                  <div style={{ color: "var(--text-primary)", fontSize: "13px", fontWeight: "600" }}>Stripe Checkout</div>
+                  <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>Global Cards & Wallets</div>
                 </div>
               </div>
               <div
@@ -179,8 +182,8 @@ export default function Footer() {
               >
                 <FaCreditCard size={22} color="#00d4ff" />
                 <div>
-                  <div style={{ color: "var(--text-primary)", fontSize: "13px", fontWeight: "600" }}>Credit / Debit</div>
-                  <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>Visa, Mastercard</div>
+                  <div style={{ color: "var(--text-primary)", fontSize: "13px", fontWeight: "600" }}>Cards & MFS</div>
+                  <div style={{ color: "var(--text-muted)", fontSize: "11px" }}>Visa, Mastercard, bKash</div>
                 </div>
               </div>
             </div>
@@ -200,10 +203,10 @@ export default function Footer() {
           }}
         >
           <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
-            © {currentYear} TicketBari. All rights reserved.
+            © {currentYear} TicketBari Ltd. All rights reserved.
           </p>
           <div style={{ display: "flex", gap: "20px" }}>
-            {["Privacy Policy", "Terms of Service"].map((t) => (
+            {["Privacy Policy", "Terms of Service", "Refund Policy"].map((t) => (
               <Link key={t} href="#" style={{ color: "var(--text-muted)", textDecoration: "none", fontSize: "13px", transition: "color 0.2s" }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#00d4ff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "var(--text-muted)")}
