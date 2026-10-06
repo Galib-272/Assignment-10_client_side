@@ -70,8 +70,12 @@ export default function RevenuePage() {
     else setLoading(false);
   }, [session]);
 
-  const monthlySales = stats?.monthlySales || mockStats.monthlySales;
-  const recentSales = stats?.recentSales || mockStats.recentSales;
+  const monthlySales = (stats?.monthlySales && Array.isArray(stats.monthlySales) && stats.monthlySales.length > 0)
+    ? stats.monthlySales
+    : mockStats.monthlySales;
+  const recentSales = (stats?.recentSales && Array.isArray(stats.recentSales) && stats.recentSales.length > 0)
+    ? stats.recentSales
+    : mockStats.recentSales;
   const maxRevenue = Math.max(...monthlySales.map((m) => m.revenue || 1));
 
   return (
