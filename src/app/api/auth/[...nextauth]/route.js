@@ -2,8 +2,11 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
-const googleClientId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID;
-const googleClientSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET;
+const rawGoogleId = process.env.AUTH_GOOGLE_ID || process.env.GOOGLE_CLIENT_ID;
+const rawGoogleSecret = process.env.AUTH_GOOGLE_SECRET || process.env.GOOGLE_CLIENT_SECRET;
+
+const googleClientId = rawGoogleId ? rawGoogleId.trim().replace(/^["']|["']$/g, "") : "";
+const googleClientSecret = rawGoogleSecret ? rawGoogleSecret.trim().replace(/^["']|["']$/g, "") : "";
 
 const providers = [
   Credentials({
@@ -95,6 +98,7 @@ if (googleClientId && googleClientSecret) {
     Google({
       clientId: googleClientId,
       clientSecret: googleClientSecret,
+      allowDangerousEmailAccountLinking: true,
     })
   );
 }
@@ -102,6 +106,32 @@ if (googleClientId && googleClientSecret) {
 const config = {
   providers,
   callbacks: {
+    async signIn({ user, account, profile }) {
+      if (account && account.provider === "google") {
+        try {
+          const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api"}/auth/google`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              email: user.email,
+              name: user.name,
+              image: user.image,
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            if (data?.user) {
+              user.id = data.user.id || data.user._id;
+              user.role = data.user.role || "user";
+              user.accessToken = data.token;
+            }
+          }
+        } catch (err) {
+          console.warn("Backend google sync error:", err.message);
+        }
+      }
+      return true;
+    },
     jwt({ token, user, account }) {
       if (user) {
         token.id = user.id || token.sub;
@@ -109,7 +139,7 @@ const config = {
         token.accessToken = user.accessToken || "mock_token_" + (user.id || token.sub);
       }
       if (account && account.provider === "google") {
-        token.role = "user";
+        if (!token.role) token.role = "user";
       }
       return token;
     },

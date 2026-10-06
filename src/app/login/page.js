@@ -6,11 +6,13 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { FaBus, FaGoogle, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
+import GoogleAuthModal from "@/components/auth/GoogleAuthModal";
 
 export default function LoginPage() {
   const router = useRouter();
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   const onSubmit = async (data) => {
@@ -37,37 +39,17 @@ export default function LoginPage() {
   const handleGoogle = async () => {
     try {
       setLoading(true);
-      // Attempt Google OAuth sign-in
-      const res = await signIn("google", { callbackUrl: "/", redirect: false });
-      if (res?.error) {
-        // If Google Cloud keys are not set up in .env yet, use instant Google demo sign-in
-        const demoRes = await signIn("credentials", {
-          email: "google.demo@ticketbari.com",
-          password: "demo",
-          isGoogleDemo: "true",
-          redirect: false,
-        });
-        if (!demoRes?.error) {
-          toast.success("Signed in with Google (Demo)!");
-          router.push("/");
-        } else {
-          toast.error("Google sign-in requires Google Client ID in .env.local");
-        }
-      } else if (res?.url) {
-        window.location.href = res.url;
+      const res = await fetch("/api/auth/providers");
+      const providers = await res.json();
+      if (providers?.google) {
+        // Real Google OAuth credentials exist! Trigger standard redirect
+        await signIn("google", { callbackUrl: "/" });
+      } else {
+        // Keys not set up in .env.local yet, show setup modal with demo fallback
+        setShowGoogleModal(true);
       }
     } catch {
-      // Direct demo sign in fallback
-      const demoRes = await signIn("credentials", {
-        email: "google.demo@ticketbari.com",
-        password: "demo",
-        isGoogleDemo: "true",
-        redirect: false,
-      });
-      if (!demoRes?.error) {
-        toast.success("Signed in with Google (Demo)!");
-        router.push("/");
-      }
+      setShowGoogleModal(true);
     } finally {
       setLoading(false);
     }
@@ -211,6 +193,11 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
+
+      <GoogleAuthModal
+        isOpen={showGoogleModal}
+        onClose={() => setShowGoogleModal(false)}
+      />
     </div>
   );
 }

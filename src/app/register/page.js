@@ -7,11 +7,13 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { signIn } from "next-auth/react";
 import { FaBus, FaGoogle, FaEnvelope, FaLock, FaUser, FaEye, FaEyeSlash } from "react-icons/fa";
+import GoogleAuthModal from "@/components/auth/GoogleAuthModal";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
 
   const onSubmit = async (data) => {
@@ -39,34 +41,17 @@ export default function RegisterPage() {
   const handleGoogle = async () => {
     try {
       setLoading(true);
-      const res = await signIn("google", { callbackUrl: "/", redirect: false });
-      if (res?.error) {
-        const demoRes = await signIn("credentials", {
-          email: "google.demo@ticketbari.com",
-          password: "demo",
-          isGoogleDemo: "true",
-          redirect: false,
-        });
-        if (!demoRes?.error) {
-          toast.success("Signed in with Google (Demo)!");
-          router.push("/");
-        } else {
-          toast.error("Google sign-in requires Google Client ID in .env.local");
-        }
-      } else if (res?.url) {
-        window.location.href = res.url;
+      const res = await fetch("/api/auth/providers");
+      const providers = await res.json();
+      if (providers?.google) {
+        // Real Google OAuth credentials exist! Trigger standard redirect
+        await signIn("google", { callbackUrl: "/" });
+      } else {
+        // Keys not set up in .env.local yet, show setup modal with demo fallback
+        setShowGoogleModal(true);
       }
     } catch {
-      const demoRes = await signIn("credentials", {
-        email: "google.demo@ticketbari.com",
-        password: "demo",
-        isGoogleDemo: "true",
-        redirect: false,
-      });
-      if (!demoRes?.error) {
-        toast.success("Signed in with Google (Demo)!");
-        router.push("/");
-      }
+      setShowGoogleModal(true);
     } finally {
       setLoading(false);
     }
@@ -226,6 +211,11 @@ export default function RegisterPage() {
           </p>
         </div>
       </div>
+
+      <GoogleAuthModal
+        isOpen={showGoogleModal}
+        onClose={() => setShowGoogleModal(false)}
+      />
     </div>
   );
 }
