@@ -38,6 +38,7 @@ export default function MyBookingsPage() {
   const { data: session } = useSession();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const fetchBookings = async () => {
     try {
@@ -81,6 +82,11 @@ export default function MyBookingsPage() {
     }
   };
 
+  const filteredBookings = bookings.filter((b) => {
+    if (statusFilter === "all") return true;
+    return b.status?.toLowerCase() === statusFilter.toLowerCase();
+  });
+
   if (loading) {
     return (
       <div style={{ display: "flex", justifyContent: "center", paddingTop: "60px" }}>
@@ -91,24 +97,48 @@ export default function MyBookingsPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: "32px" }}>
+      <div style={{ marginBottom: "28px" }}>
         <h1 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "6px" }}>
           My Booked Tickets
         </h1>
         <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>
-          {bookings.length} booking{bookings.length !== 1 ? "s" : ""} found
+          {bookings.length} total booking{bookings.length !== 1 ? "s" : ""} on record
         </p>
       </div>
 
-      {bookings.length === 0 ? (
+      {/* Filter Tabs */}
+      <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "24px" }}>
+        {["all", "pending", "accepted", "paid", "rejected"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setStatusFilter(tab)}
+            style={{
+              padding: "7px 16px",
+              borderRadius: "8px",
+              border: `1.5px solid ${statusFilter === tab ? "rgba(0,212,255,0.5)" : "var(--border-color)"}`,
+              background: statusFilter === tab ? "rgba(0,212,255,0.12)" : "transparent",
+              color: statusFilter === tab ? "#00d4ff" : "var(--text-secondary)",
+              fontSize: "13px",
+              fontWeight: "600",
+              cursor: "pointer",
+              textTransform: "capitalize",
+              fontFamily: "Outfit, sans-serif",
+            }}
+          >
+            {tab} {tab !== "all" && `(${bookings.filter(b => b.status === tab).length})`}
+          </button>
+        ))}
+      </div>
+
+      {filteredBookings.length === 0 ? (
         <div style={{ textAlign: "center", padding: "80px 24px", background: "var(--bg-card)", borderRadius: "16px", border: "1px solid var(--border-color)" }}>
           <FaTicketAlt size={48} color="var(--text-muted)" style={{ marginBottom: "16px" }} />
-          <h3 style={{ fontSize: "20px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "8px" }}>No bookings yet</h3>
-          <p style={{ color: "var(--text-secondary)" }}>Start exploring tickets and make your first booking!</p>
+          <h3 style={{ fontSize: "20px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "8px" }}>No {statusFilter !== "all" ? statusFilter : ""} bookings</h3>
+          <p style={{ color: "var(--text-secondary)" }}>Your booking entries will appear here</p>
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" }}>
-          {bookings.map((booking) => {
+          {filteredBookings.map((booking) => {
             const ticket = booking.ticketId;
             const total = ticket?.price * booking.quantity;
             const departed = isPast(new Date(ticket?.departureDate));
