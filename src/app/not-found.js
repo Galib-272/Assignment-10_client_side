@@ -47,7 +47,7 @@ export default function NotFound() {
           We couldn&apos;t find the route or page you are looking for. It might have departed, been rescheduled, or never existed in our schedule.
         </p>
 
-        <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: "16px", justifyContent: "center", flexWrap: "wrap", marginBottom: "28px" }}>
           <Link
             href="/"
             className="btn btn-primary"
@@ -62,6 +62,15 @@ export default function NotFound() {
           >
             <FaCompass /> Explore Tickets
           </Link>
+        </div>
+
+        <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "20px" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
+            Need assistance finding your journey?{" "}
+            <Link href="/contact" style={{ color: "var(--color-primary)", textDecoration: "none", fontWeight: "600" }}>
+              Contact our 24/7 Support
+            </Link>
+          </p>
         </div>
       </div>
     </div>
