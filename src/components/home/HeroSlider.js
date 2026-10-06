@@ -45,7 +45,7 @@ const slides = [
 
 export default function HeroSlider() {
   return (
-    <section style={{ position: "relative", height: "92vh", minHeight: "680px", overflow: "hidden", background: "#05081a" }}>
+    <section className="hero-section" style={{ position: "relative", height: "92vh", minHeight: "680px", overflow: "hidden", background: "#05081a" }}>
       <Swiper
         modules={[Autoplay, Pagination, Navigation, EffectFade]}
         effect="fade"
@@ -90,6 +90,7 @@ export default function HeroSlider() {
 
             {/* Slide Content */}
             <div
+              className="hero-content-inner"
               style={{
                 position: "relative",
                 zIndex: 2,
@@ -197,6 +198,7 @@ export default function HeroSlider() {
 
                 {/* Key Statistics */}
                 <div
+                  className="hero-stats"
                   style={{
                     display: "flex",
                     gap: "42px",

@@ -85,7 +85,7 @@ const mockTickets = [
     vendorName: "Bangladesh Railway",
     verificationStatus: "approved",
     isAdvertised: false,
-    image: "https://images.unsplash.com/photo-1517649763962-0c623266ddc0?w=600&h=400&fit=crop"
+    image: "https://images.unsplash.com/photo-1721222339587-41f46a42fb11?q=80&w=600&auto=format&fit=crop"
   },
   {
     _id: "t8",
@@ -112,12 +112,27 @@ export default function AdvertisePage() {
 
   const fetchTickets = async () => {
     try {
-      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/tickets`, {
-        headers: { Authorization: `Bearer ${session?.accessToken}`, "x-user-email": session?.user?.email || "", "x-user-role": session?.user?.role || "" },
-      });
-      // Filter for approved tickets
-      const approvedOnly = res.data.filter((t) => t.verificationStatus === "approved");
-      setTickets(approvedOnly);
+      const isAdmin = session?.user?.role === "admin";
+
+      let approvedTickets = [];
+
+      if (isAdmin) {
+        // Admins can see all tickets via the admin endpoint
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/admin/tickets`, {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "x-user-email": session?.user?.email || "",
+            "x-user-role": session?.user?.role || "",
+          },
+        });
+        approvedTickets = res.data.filter((t) => t.verificationStatus === "approved");
+      } else {
+        // Vendors & others: use the public /tickets endpoint (returns real MongoDB IDs)
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets?limit=100`);
+        approvedTickets = Array.isArray(res.data.tickets) ? res.data.tickets : [];
+      }
+
+      setTickets(approvedTickets);
     } catch {
       setTickets(mockTickets);
     } finally {
@@ -126,7 +141,7 @@ export default function AdvertisePage() {
   };
 
   useEffect(() => {
-    fetchTickets();
+    if (session !== undefined) fetchTickets();
   }, [session]);
 
   const advertisedTickets = tickets.filter((t) => t.isAdvertised);
@@ -143,19 +158,17 @@ export default function AdvertisePage() {
     setTogglingId(ticket._id);
     try {
       await axios.patch(
-        `${process.env.NEXT_PUBLIC_API_URL}/admin/tickets/${ticket._id}/advertise`,
+        `${process.env.NEXT_PUBLIC_API_URL}/tickets/advertise/${ticket._id}`,
         { isAdvertised: willAdvertise },
         { headers: { Authorization: `Bearer ${session?.accessToken}`, "x-user-email": session?.user?.email || "", "x-user-role": session?.user?.role || "" } }
       );
-      toast.success(willAdvertise ? "Ticket added to homepage showcase!" : "Ticket removed from showcase");
+      toast.success(willAdvertise ? "✅ Ticket added to homepage showcase!" : "🗑️ Ticket removed from showcase");
       setTickets((prev) =>
         prev.map((t) => (t._id === ticket._id ? { ...t, isAdvertised: willAdvertise } : t))
       );
-    } catch {
-      setTickets((prev) =>
-        prev.map((t) => (t._id === ticket._id ? { ...t, isAdvertised: willAdvertise } : t))
-      );
-      toast.success(willAdvertise ? "Added to homepage showcase (Simulated)!" : "Removed from showcase (Simulated)");
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Failed to update showcase";
+      toast.error(msg);
     } finally {
       setTogglingId(null);
     }
@@ -265,6 +278,11 @@ export default function AdvertisePage() {
       }}>
         {filteredTickets.map((ticket) => {
           const isAdv = ticket.isAdvertised;
+          const isAdmin = session?.user?.role === "admin";
+          const isOwner = isAdmin || ticket.vendorEmail === session?.user?.email;
+          const slotsFull = !isAdv && advertisedCount >= 6;
+          const isDisabled = togglingId === ticket._id || slotsFull || !isOwner;
+
           return (
             <div
               key={ticket._id}
@@ -282,6 +300,9 @@ export default function AdvertisePage() {
                 <img
                   src={ticket.image || "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600&h=400&fit=crop"}
                   alt={ticket.title}
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1568514328861-5465017e40fc?q=80&w=800&auto=format&fit=crop";
+                  }}
                   style={{ width: "100%", height: "100%", objectFit: "cover" }}
                 />
                 <div style={{
@@ -322,42 +343,48 @@ export default function AdvertisePage() {
 
                 {/* Toggle Button */}
                 <button
-                  onClick={() => handleToggleAdvertise(ticket)}
-                  disabled={togglingId === ticket._id || (!isAdv && advertisedCount >= 6)}
+                  onClick={() => isOwner && handleToggleAdvertise(ticket)}
+                  disabled={isDisabled}
+                  title={!isOwner ? "You can only advertise your own tickets" : slotsFull ? "All 6 slots are filled" : ""}
                   style={{
                     width: "100%",
                     padding: "10px 16px",
                     borderRadius: "10px",
                     fontSize: "13px",
                     fontWeight: "600",
-                    cursor: (!isAdv && advertisedCount >= 6) ? "not-allowed" : "pointer",
+                    cursor: isDisabled ? "not-allowed" : "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "8px",
                     transition: "all 0.2s ease",
-                    background: isAdv
-                      ? "rgba(239, 68, 68, 0.15)"
-                      : "linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)",
-                    color: isAdv ? "var(--color-error)" : "#fff",
-                    border: isAdv ? "1px solid rgba(239, 68, 68, 0.3)" : "none",
-                    opacity: (!isAdv && advertisedCount >= 6) ? 0.5 : 1
+                    background: !isOwner
+                      ? "rgba(255,255,255,0.04)"
+                      : isAdv
+                        ? "rgba(239, 68, 68, 0.15)"
+                        : "linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%)",
+                    color: !isOwner ? "var(--text-muted)" : isAdv ? "var(--color-error)" : "#fff",
+                    border: !isOwner
+                      ? "1px solid var(--border-color)"
+                      : isAdv ? "1px solid rgba(239, 68, 68, 0.3)" : "none",
+                    opacity: isDisabled ? 0.55 : 1
                   }}
                 >
-                  {isAdv ? (
-                    <>
-                      <FaTimesCircle /> Remove from Showcase
-                    </>
+                  {togglingId === ticket._id ? (
+                    <>⏳ Updating...</>
+                  ) : !isOwner ? (
+                    <>🔒 Not Your Ticket</>
+                  ) : isAdv ? (
+                    <><FaTimesCircle /> Remove from Showcase</>
                   ) : (
-                    <>
-                      <FaCheckCircle /> Advertise on Homepage
-                    </>
+                    <><FaCheckCircle /> Advertise on Homepage</>
                   )}
                 </button>
               </div>
             </div>
           );
         })}
+
       </div>
     </div>
   );

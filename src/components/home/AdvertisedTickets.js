@@ -5,33 +5,40 @@ import Link from "next/link";
 import TicketCard from "@/components/tickets/TicketCard";
 import { FaBullhorn, FaArrowRight } from "react-icons/fa";
 
-// Mock data for when API is not yet connected
-const mockAdvertised = [
-  { _id: "1", title: "Dhaka to Chittagong Express", from: "Dhaka", to: "Chittagong", price: 850, transportType: "bus", quantity: 45, perks: ["AC", "WiFi", "Snacks"], image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=200&fit=crop" },
-  { _id: "2", title: "Dhaka to Cox's Bazar Direct", from: "Dhaka", to: "Cox's Bazar", price: 1200, transportType: "bus", quantity: 30, perks: ["AC", "Breakfast", "Movie"], image: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=200&fit=crop" },
-  { _id: "3", title: "Dhaka to Sylhet Intercity", from: "Dhaka", to: "Sylhet", price: 450, transportType: "train", quantity: 120, perks: ["AC", "Dining Car"], image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400&h=200&fit=crop" },
-  { _id: "4", title: "Dhaka to Barishal Launch", from: "Dhaka", to: "Barishal", price: 350, transportType: "launch", quantity: 200, perks: ["Cabin", "Restaurant"], image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=200&fit=crop" },
-  { _id: "5", title: "Dhaka to Rajshahi Flight", from: "Dhaka", to: "Rajshahi", price: 3500, transportType: "plane", quantity: 60, perks: ["Meal", "Lounge"], image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=200&fit=crop" },
-  { _id: "6", title: "Dhaka to Khulna Express", from: "Dhaka", to: "Khulna", price: 600, transportType: "train", quantity: 80, perks: ["AC", "Breakfast"], image: "https://images.unsplash.com/photo-1565793279042-ab0ddf5a57f0?w=400&h=200&fit=crop" },
-];
+import { MOCK_ADVERTISED } from "@/data/mockTickets";
 
 export default function AdvertisedTickets() {
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchAdvertised = async () => {
+    try {
+      const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets/advertised`);
+      const data = Array.isArray(res.data) ? res.data : [];
+      setTickets(data.length > 0 ? data.slice(0, 6) : MOCK_ADVERTISED);
+    } catch {
+      setTickets(MOCK_ADVERTISED);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchAdvertised = async () => {
-      try {
-        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets/advertised`);
-        const data = Array.isArray(res.data) ? res.data : [];
-        setTickets(data.length > 0 ? data.slice(0, 6) : mockAdvertised);
-      } catch {
-        setTickets(mockAdvertised);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchAdvertised();
+
+    // Re-fetch whenever the user returns to this tab (e.g. after toggling showcase in dashboard)
+    const handleFocus = () => fetchAdvertised();
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") fetchAdvertised();
+    };
+
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   return (

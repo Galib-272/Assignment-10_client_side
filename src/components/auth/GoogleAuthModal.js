@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { FaGoogle, FaCopy, FaCheck, FaTimes, FaExternalLinkAlt } from "react-icons/fa";
 
-export default function GoogleAuthModal({ isOpen, onClose }) {
+export default function GoogleAuthModal({ isOpen, onClose, redirectUrl = "/" }) {
   const router = useRouter();
   const [copied, setCopied] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
@@ -37,7 +37,7 @@ export default function GoogleAuthModal({ isOpen, onClose }) {
       } else {
         toast.success("Signed in with Google (Demo account)!");
         onClose();
-        router.push("/");
+        router.push(redirectUrl);
       }
     } catch {
       toast.error("Error signing in with demo account");

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { FaEdit, FaTrash, FaTicketAlt, FaSync } from "react-icons/fa";
+import { FaEdit, FaTrash, FaTicketAlt, FaSync, FaExclamationTriangle, FaTimes } from "react-icons/fa";
 
 const STATUS_FILTERS = ["all", "approved", "pending", "rejected"];
 
@@ -27,6 +27,8 @@ export default function MyTicketsPage() {
   const [editingTicket, setEditingTicket] = useState(null);
   const [editPrice, setEditPrice] = useState("");
   const [editQty, setEditQty] = useState("");
+  const [deletingTicket, setDeletingTicket] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const filteredTickets = statusFilter === "all"
     ? tickets
@@ -57,16 +59,25 @@ export default function MyTicketsPage() {
 
   useEffect(() => { if (session) fetchTickets(); }, [session]);
 
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this ticket?")) return;
+  const handleConfirmDelete = async () => {
+    if (!deletingTicket) return;
+    setIsDeleting(true);
     try {
-      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${id}`, {
-        headers: { Authorization: `Bearer ${session?.accessToken}`, "x-user-email": session?.user?.email || "", "x-user-role": session?.user?.role || "" },
+      await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${deletingTicket._id}`, {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+          "x-user-email": session?.user?.email || "",
+          "x-user-role": session?.user?.role || "vendor",
+        },
       });
-      toast.success("Ticket deleted");
+      toast.success("Ticket deleted successfully");
+      setDeletingTicket(null);
       fetchTickets();
-    } catch {
-      toast.error("Delete failed");
+    } catch (err) {
+      const msg = err.response?.data?.message || "Delete failed";
+      toast.error(msg);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -137,7 +148,14 @@ export default function MyTicketsPage() {
             return (
               <div key={ticket._id} className="ticket-card" style={{ overflow: "hidden" }}>
                 <div style={{ position: "relative", height: "150px" }}>
-                  <img src={ticket.image} alt={ticket.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <img
+                    src={ticket.image}
+                    alt={ticket.title}
+                    onError={(e) => {
+                      e.currentTarget.src = "https://images.unsplash.com/photo-1568514328861-5465017e40fc?q=80&w=800&auto=format&fit=crop";
+                    }}
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
                   <div style={{ position: "absolute", top: "10px", right: "10px" }}>
                     <span style={{ background: s.bg, border: `1px solid ${s.border}`, color: s.color, borderRadius: "6px", padding: "4px 10px", fontSize: "11px", fontWeight: "700", letterSpacing: "0.5px" }}>
                       {ticket.verificationStatus?.toUpperCase()}
@@ -183,7 +201,7 @@ export default function MyTicketsPage() {
                       <FaEdit size={12} /> Update
                     </button>
                     <button
-                      onClick={() => handleDelete(ticket._id)}
+                      onClick={() => setDeletingTicket(ticket)}
                       disabled={isRejected}
                       className="btn-danger"
                       style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: "6px", padding: "9px", fontSize: "13px", opacity: isRejected ? 0.5 : 1, cursor: isRejected ? "not-allowed" : "pointer" }}
@@ -195,6 +213,136 @@ export default function MyTicketsPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deletingTicket && (
+        <div
+          className="modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !isDeleting) {
+              setDeletingTicket(null);
+            }
+          }}
+        >
+          <div className="modal-box" style={{ maxWidth: "460px" }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <div
+                  style={{
+                    width: "44px",
+                    height: "44px",
+                    borderRadius: "12px",
+                    background: "rgba(239,68,68,0.15)",
+                    border: "1px solid rgba(239,68,68,0.3)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#ef4444",
+                    flexShrink: 0,
+                  }}
+                >
+                  <FaExclamationTriangle size={20} />
+                </div>
+                <div>
+                  <h3
+                    style={{
+                      fontSize: "18px",
+                      fontWeight: "800",
+                      color: "var(--text-primary)",
+                      fontFamily: "Space Grotesk, sans-serif",
+                      margin: 0,
+                    }}
+                  >
+                    Delete Ticket Listing?
+                  </h3>
+                  <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                    This action cannot be undone
+                  </span>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => !isDeleting && setDeletingTicket(null)}
+                disabled={isDeleting}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "var(--text-muted)",
+                  cursor: isDeleting ? "not-allowed" : "pointer",
+                  fontSize: "16px",
+                  padding: "4px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <FaTimes />
+              </button>
+            </div>
+
+            {/* Ticket Summary Box */}
+            <div
+              style={{
+                background: "var(--bg-surface2)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "12px",
+                padding: "14px 16px",
+                marginBottom: "20px",
+              }}
+            >
+              <div style={{ fontWeight: "700", color: "var(--text-primary)", fontSize: "15px", marginBottom: "6px" }}>
+                {deletingTicket.title}
+              </div>
+              <div style={{ fontSize: "13px", color: "var(--text-secondary)", display: "flex", gap: "12px", flexWrap: "wrap" }}>
+                <span>📍 {deletingTicket.from} → {deletingTicket.to}</span>
+                <span>🏷️ ৳{deletingTicket.price?.toLocaleString()}</span>
+                <span>💺 {deletingTicket.quantity} seats</span>
+              </div>
+            </div>
+
+            <p style={{ color: "var(--text-secondary)", fontSize: "14px", lineHeight: "1.5", marginBottom: "24px" }}>
+              Are you sure you want to permanently delete this ticket listing? It will be removed from customer search, homepage showcases, and all active listings.
+            </p>
+
+            <div style={{ display: "flex", gap: "12px" }}>
+              <button
+                type="button"
+                onClick={() => setDeletingTicket(null)}
+                disabled={isDeleting}
+                className="btn-outline"
+                style={{ flex: 1, padding: "10px", fontSize: "14px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmDelete}
+                disabled={isDeleting}
+                className="btn-danger"
+                style={{
+                  flex: 1,
+                  padding: "10px",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "8px",
+                }}
+              >
+                {isDeleting ? (
+                  <>
+                    <div className="spinner" style={{ width: "16px", height: "16px", borderWidth: "2px" }} />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <FaTrash size={12} /> Delete Permanently
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

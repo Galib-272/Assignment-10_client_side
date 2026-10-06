@@ -528,3 +528,27 @@ body {
   }
 }
 
+/* ─── Hero Section ─── */
+.hero-section {
+  margin-top: 70px; /* always clear the fixed navbar */
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    min-height: calc(100svh - 70px) !important;
+    height: auto !important;
+  }
+
+  /* shrink hero content padding so nothing gets clipped */
+  .hero-content-inner {
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
+  }
+
+  /* tighter stat row on small screens */
+  .hero-stats {
+    gap: 20px !important;
+    margin-top: 28px !important;
+  }
+}
+

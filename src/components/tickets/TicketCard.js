@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { FaBus, FaTrain, FaPlane, FaShip, FaStar, FaMapMarkerAlt, FaArrowRight } from "react-icons/fa";
 import { MdAirlineSeatReclineNormal } from "react-icons/md";
 
@@ -18,7 +19,10 @@ const transportColor = {
 };
 
 export default function TicketCard({ ticket, compact = false }) {
+  const { data: session } = useSession();
   if (!ticket) return null;
+
+  const detailsHref = session ? `/tickets/${ticket._id}` : `/login?callbackUrl=/tickets/${ticket._id}`;
 
   const type = ticket.transportType?.toLowerCase() || "bus";
   const color = transportColor[type] || "#00d4ff";
@@ -30,6 +34,9 @@ export default function TicketCard({ ticket, compact = false }) {
         <img
           src={ticket.image || `https://picsum.photos/seed/${ticket._id || Math.random()}/400/200`}
           alt={ticket.title}
+          onError={(e) => {
+            e.currentTarget.src = "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=600&h=400&fit=crop";
+          }}
           style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.4s ease" }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.05)")}
           onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
@@ -117,7 +124,7 @@ export default function TicketCard({ ticket, compact = false }) {
         <div style={{ flex: 1 }} />
 
         {/* See details button */}
-        <Link href={`/tickets/${ticket._id}`} style={{ textDecoration: "none", marginTop: "4px" }}>
+        <Link href={detailsHref} style={{ textDecoration: "none", marginTop: "4px" }}>
           <button
             className="btn-primary"
             style={{

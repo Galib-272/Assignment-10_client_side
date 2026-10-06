@@ -187,46 +187,46 @@ function BookingModal({ ticket, onClose, onSuccess }) {
   );
 }
 
-const mockTicket = {
-  _id: "1",
-  title: "Dhaka to Chittagong Express",
-  from: "Dhaka",
-  to: "Chittagong",
-  price: 850,
-  transportType: "Bus",
-  quantity: 45,
-  perks: ["AC", "WiFi", "Snacks", "Reclining Seats"],
-  image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&h=400&fit=crop",
-  departureDate: "2026-12-15T08:00:00Z",
-  vendorName: "GreenLine Paribahan",
-  vendorEmail: "vendor@greenline.com",
-};
+import { getMockTicketById } from "@/data/mockTickets";
 
 export default function TicketDetailsPage() {
   const { id } = useParams();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
+    if (status === "unauthenticated") {
+      router.replace(`/login?callbackUrl=/tickets/${id}`);
+    }
+  }, [status, id, router]);
+
+  useEffect(() => {
+    if (status !== "authenticated") return;
     const fetchTicket = async () => {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets/${id}`);
-        setTicket(res.data);
+        if (res.data) {
+          setTicket(res.data);
+        } else {
+          const fallback = getMockTicketById(id);
+          setTicket(fallback);
+        }
       } catch {
-        setTicket(mockTicket);
+        const fallback = getMockTicketById(id);
+        setTicket(fallback);
       } finally {
         setLoading(false);
       }
     };
-    fetchTicket();
-  }, [id]);
+    if (id) fetchTicket();
+  }, [id, status]);
 
-  if (loading) {
+  if (status === "loading" || status === "unauthenticated" || loading) {
     return (
-      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "80px" }}>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", paddingTop: "80px", background: "var(--bg-primary)" }}>
         <div className="spinner" />
       </div>
     );
@@ -268,7 +268,14 @@ export default function TicketDetailsPage() {
           <div>
             {/* Image */}
             <div style={{ borderRadius: "20px", overflow: "hidden", marginBottom: "28px", position: "relative", height: "360px" }}>
-              <img src={ticket.image} alt={ticket.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              <img
+                src={ticket.image}
+                alt={ticket.title}
+                onError={(e) => {
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1568514328861-5465017e40fc?q=80&w=800&auto=format&fit=crop";
+                }}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
               <div style={{ position: "absolute", top: "16px", left: "16px", background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)", color: "#fff", borderRadius: "10px", padding: "6px 14px", fontSize: "13px", fontWeight: "700", display: "flex", alignItems: "center", gap: "6px" }}>
                 {transportIcon[type]} {ticket.transportType}
               </div>
@@ -354,6 +361,17 @@ export default function TicketDetailsPage() {
                     <FaLock size={13} /> Login to Book
                   </button>
                 </Link>
+              ) : ticket.vendorEmail === session?.user?.email ? (
+                <div>
+                  <Link href="/dashboard/my-tickets" style={{ textDecoration: "none" }}>
+                    <button className="btn-primary" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                      Manage This Ticket in Dashboard ⚙️
+                    </button>
+                  </Link>
+                  <p style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "12px", marginTop: "8px" }}>
+                    You are the vendor for this ticket
+                  </p>
+                </div>
               ) : (
                 <button
                   onClick={() => setShowModal(true)}

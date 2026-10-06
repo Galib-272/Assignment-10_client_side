@@ -1,15 +1,18 @@
 "use client";
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { FaBus, FaGoogle, FaEnvelope, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import GoogleAuthModal from "@/components/auth/GoogleAuthModal";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
+
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showGoogleModal, setShowGoogleModal] = useState(false);
@@ -27,7 +30,7 @@ export default function LoginPage() {
         toast.error("Invalid email or password");
       } else {
         toast.success("Welcome back!");
-        router.push("/");
+        router.push(callbackUrl);
       }
     } catch {
       toast.error("Something went wrong");
@@ -43,7 +46,7 @@ export default function LoginPage() {
       const providers = await res.json();
       if (providers?.google) {
         // Real Google OAuth credentials exist! Trigger standard redirect
-        await signIn("google", { callbackUrl: "/" });
+        await signIn("google", { callbackUrl });
       } else {
         // Keys not set up in .env.local yet, show setup modal with demo fallback
         setShowGoogleModal(true);
@@ -197,7 +200,20 @@ export default function LoginPage() {
       <GoogleAuthModal
         isOpen={showGoogleModal}
         onClose={() => setShowGoogleModal(false)}
+        redirectUrl={callbackUrl}
       />
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--bg-primary)" }}>
+        <div className="spinner" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

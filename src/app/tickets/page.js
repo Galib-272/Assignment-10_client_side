@@ -8,20 +8,7 @@ import { FaSearch, FaFilter, FaSortAmountDown, FaSortAmountUp, FaBus, FaTrain, F
 const TRANSPORT_TYPES = ["All", "Bus", "Train", "Plane", "Launch"];
 const PAGE_SIZE = 9;
 
-const mockTickets = [
-  { _id: "1", title: "Dhaka to Chittagong Express", from: "Dhaka", to: "Chittagong", price: 850, transportType: "Bus", quantity: 45, perks: ["AC", "WiFi"], image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&h=200&fit=crop", departureDate: "2026-11-01T08:00:00Z" },
-  { _id: "2", title: "Dhaka to Cox's Bazar Direct", from: "Dhaka", to: "Cox's Bazar", price: 1200, transportType: "Bus", quantity: 30, perks: ["AC", "Breakfast"], image: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=400&h=200&fit=crop", departureDate: "2026-11-02T09:00:00Z" },
-  { _id: "3", title: "Dhaka to Sylhet Intercity", from: "Dhaka", to: "Sylhet", price: 450, transportType: "Train", quantity: 120, perks: ["AC", "Dining Car"], image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?w=400&h=200&fit=crop", departureDate: "2026-11-03T07:00:00Z" },
-  { _id: "4", title: "Dhaka to Barishal Launch", from: "Dhaka", to: "Barishal", price: 350, transportType: "Launch", quantity: 200, perks: ["Cabin"], image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=200&fit=crop", departureDate: "2026-11-04T18:00:00Z" },
-  { _id: "5", title: "Dhaka to Rajshahi Flight", from: "Dhaka", to: "Rajshahi", price: 3500, transportType: "Plane", quantity: 60, perks: ["Meal"], image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400&h=200&fit=crop", departureDate: "2026-11-05T10:00:00Z" },
-  { _id: "6", title: "Dhaka to Khulna Express", from: "Dhaka", to: "Khulna", price: 600, transportType: "Train", quantity: 80, perks: ["AC", "Breakfast"], image: "https://images.unsplash.com/photo-1565793279042-ab0ddf5a57f0?w=400&h=200&fit=crop", departureDate: "2026-11-06T06:00:00Z" },
-  { _id: "7", title: "Chittagong to Cox's Bazar", from: "Chittagong", to: "Cox's Bazar", price: 280, transportType: "Bus", quantity: 50, perks: ["AC"], image: "https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?w=400&h=200&fit=crop", departureDate: "2026-11-07T08:30:00Z" },
-  { _id: "8", title: "Dhaka to Jessore Flight", from: "Dhaka", to: "Jessore", price: 2800, transportType: "Plane", quantity: 40, perks: ["Meal"], image: "https://images.unsplash.com/photo-1529074963764-98f45c47344b?w=400&h=200&fit=crop", departureDate: "2026-11-08T11:00:00Z" },
-  { _id: "9", title: "Narayanganj to Dhaka Water", from: "Narayanganj", to: "Dhaka", price: 120, transportType: "Launch", quantity: 300, perks: ["Scenic"], image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=400&h=200&fit=crop", departureDate: "2026-11-09T07:00:00Z" },
-  { _id: "10", title: "Sylhet to Dhaka Express", from: "Sylhet", to: "Dhaka", price: 480, transportType: "Train", quantity: 90, perks: ["AC"], image: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=400&h=200&fit=crop", departureDate: "2026-11-10T09:00:00Z" },
-  { _id: "11", title: "Rajshahi to Dhaka Bus", from: "Rajshahi", to: "Dhaka", price: 520, transportType: "Bus", quantity: 45, perks: ["AC", "WiFi"], image: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&h=200&fit=crop", departureDate: "2026-11-11T08:00:00Z" },
-  { _id: "12", title: "Dhaka to Tangail AC Bus", from: "Dhaka", to: "Tangail", price: 180, transportType: "Bus", quantity: 55, perks: ["AC"], image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=400&h=200&fit=crop", departureDate: "2026-11-12T08:00:00Z" },
-];
+import { MOCK_TICKETS } from "@/data/mockTickets";
 
 function TicketsContent() {
   const searchParams = useSearchParams();
@@ -61,15 +48,19 @@ function TicketsContent() {
         ...(sort !== "none" && { sort }),
       });
       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets?${params}`);
-      setTickets(res.data.tickets);
-      setTotalPages(res.data.totalPages || 1);
+      if (res.data?.tickets && res.data.tickets.length > 0) {
+        setTickets(res.data.tickets);
+        setTotalPages(res.data.totalPages || 1);
+      } else {
+        throw new Error("No tickets in DB");
+      }
     } catch {
-      let filtered = [...mockTickets];
+      let filtered = [...MOCK_TICKETS];
       if (search.from) filtered = filtered.filter(t => t.from.toLowerCase().includes(search.from.toLowerCase()));
       if (search.to) filtered = filtered.filter(t => t.to.toLowerCase().includes(search.to.toLowerCase()));
-      if (transport !== "All") filtered = filtered.filter(t => t.transportType === transport);
-      if (sort === "asc") filtered.sort((a, b) => a.price - b.price);
-      if (sort === "desc") filtered.sort((a, b) => b.price - a.price);
+      if (transport !== "All") filtered = filtered.filter(t => t.transportType?.toLowerCase() === transport.toLowerCase());
+      if (sort === "asc" || sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
+      if (sort === "desc" || sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
       setTotalPages(Math.ceil(filtered.length / PAGE_SIZE));
       setTickets(filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE));
     } finally {
