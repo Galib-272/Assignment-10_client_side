@@ -10,170 +10,227 @@ import { FaArrowRight, FaBus, FaTrain, FaPlane, FaShip } from "react-icons/fa";
 
 const slides = [
   {
+    type: "Bus",
+    tag: "🚌 Luxury Intercity Bus",
     title: "Travel Smarter,\nBook Faster",
-    subtitle: "Discover the best bus, train, launch & flight tickets across Bangladesh",
-    gradient: "linear-gradient(135deg, rgba(0,212,255,0.2), rgba(124,58,237,0.2))",
-    icon: <FaBus size={80} color="rgba(0,212,255,0.3)" />,
-    tag: "🚌 Bus Tickets",
+    subtitle: "Premium AC coaches, sleeper beds, and comfortable intercity routes across Bangladesh.",
+    image: "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=1920&q=80",
+    accentColor: "#00d4ff",
   },
   {
-    title: "Train Journeys\nMade Easy",
-    subtitle: "Book intercity train tickets with real-time seat availability",
-    gradient: "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(245,158,11,0.2))",
-    icon: <FaTrain size={80} color="rgba(124,58,237,0.3)" />,
-    tag: "🚆 Train Tickets",
+    type: "Train",
+    tag: "🚆 Bangladesh Railway",
+    title: "Scenic Rail Journeys\nMade Simple",
+    subtitle: "Fast Shovon, Snigdha, and AC Berth reservations with live seat availability.",
+    image: "https://images.unsplash.com/photo-1474487548417-781cb71495f3?auto=format&fit=crop&w=1920&q=80",
+    accentColor: "#7c3aed",
   },
   {
-    title: "Fly High,\nPay Less",
-    subtitle: "Get exclusive deals on domestic and international flights",
-    gradient: "linear-gradient(135deg, rgba(245,158,11,0.2), rgba(16,185,129,0.2))",
-    icon: <FaPlane size={80} color="rgba(245,158,11,0.3)" />,
-    tag: "✈️ Flight Tickets",
+    type: "Plane",
+    tag: "✈️ Domestic & International Flights",
+    title: "Fly Across Horizons,\nPay Less",
+    subtitle: "Lowest airfares on Biman, US-Bangla, Novoair, and leading global airlines.",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1920&q=80",
+    accentColor: "#f59e0b",
   },
   {
-    title: "Sail the Rivers\nof Bangladesh",
-    subtitle: "Experience scenic launch journeys with premium amenities",
-    gradient: "linear-gradient(135deg, rgba(16,185,129,0.2), rgba(0,212,255,0.2))",
-    icon: <FaShip size={80} color="rgba(16,185,129,0.3)" />,
-    tag: "🚢 Launch Tickets",
+    type: "Launch",
+    tag: "🚢 Scenic River Cruise & Launch",
+    title: "Sail The Majestic Rivers\nof Bangladesh",
+    subtitle: "VIP cabins, riverine breeze, and luxury launch voyages connecting Dhaka & Southern ports.",
+    image: "https://images.unsplash.com/photo-1527797393658-6a8777f47011?auto=format&fit=crop&w=1920&q=80",
+    accentColor: "#10b981",
   },
 ];
 
 export default function HeroSlider() {
   return (
-    <section style={{ position: "relative", height: "100vh", minHeight: "650px", overflow: "hidden" }}>
-      {/* Animated background blobs */}
-      <div style={{
-        position: "absolute", inset: 0,
-        background: "radial-gradient(ellipse 80% 60% at 50% -20%, rgba(0,212,255,0.12) 0%, transparent 60%)",
-        zIndex: 0, pointerEvents: "none"
-      }} />
-      <div className="bg-glow" style={{ width: "400px", height: "400px", background: "rgba(124,58,237,0.08)", top: "-100px", right: "-100px" }} />
-      <div className="bg-glow" style={{ width: "300px", height: "300px", background: "rgba(0,212,255,0.06)", bottom: "0px", left: "-80px" }} />
-
+    <section style={{ position: "relative", height: "92vh", minHeight: "680px", overflow: "hidden", background: "#05081a" }}>
       <Swiper
         modules={[Autoplay, Pagination, Navigation, EffectFade]}
         effect="fade"
-        autoplay={{ delay: 4500, disableOnInteraction: false }}
+        fadeEffect={{ crossFade: true }}
+        speed={800}
+        autoplay={{ delay: 5000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         navigation
         loop
-        style={{ height: "100%", zIndex: 1 }}
+        style={{ width: "100%", height: "100%" }}
       >
         {slides.map((slide, i) => (
-          <SwiperSlide key={i}>
+          <SwiperSlide key={i} style={{ width: "100%", height: "100%", position: "relative" }}>
+            {/* Background Image Container */}
             <div
               style={{
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                position: "absolute",
+                inset: 0,
+                backgroundImage: `url(${slide.image})`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                transform: "scale(1.02)",
+                transition: "transform 6s ease",
+              }}
+            />
+
+            {/* Dark Cinematic Gradient Overlays to eliminate text overlap & boost readability */}
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "linear-gradient(90deg, rgba(5,8,26,0.95) 0%, rgba(5,8,26,0.82) 48%, rgba(5,8,26,0.45) 100%)",
+              }}
+            />
+            <div
+              style={{
+                position: "absolute",
+                inset: 0,
+                background: "linear-gradient(180deg, rgba(5,8,26,0.4) 0%, transparent 40%, rgba(5,8,26,0.95) 100%)",
+              }}
+            />
+
+            {/* Slide Content */}
+            <div
+              style={{
                 position: "relative",
-                overflow: "hidden",
-                background: slide.gradient,
+                zIndex: 2,
+                height: "100%",
+                maxWidth: "1280px",
+                margin: "0 auto",
+                padding: "0 24px",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
               }}
             >
-              {/* Floating icon */}
-              <div
-                className="animate-float"
-                style={{
-                  position: "absolute",
-                  right: "10%",
-                  top: "50%",
-                  transform: "translateY(-50%)",
-                  opacity: 0.6,
-                }}
-              >
-                {slide.icon}
-              </div>
-
-              {/* Grid lines decoration */}
-              <div style={{
-                position: "absolute", inset: 0, opacity: 0.04,
-                backgroundImage: "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
-                backgroundSize: "60px 60px",
-              }} />
-
-              {/* Content */}
-              <div
-                style={{
-                  maxWidth: "1280px",
-                  width: "100%",
-                  padding: "0 24px",
-                  zIndex: 2,
-                }}
-              >
-                <span
+              <div style={{ maxWidth: "680px" }}>
+                {/* Category Badge */}
+                <div
                   style={{
-                    display: "inline-block",
-                    background: "rgba(0,212,255,0.1)",
-                    border: "1px solid rgba(0,212,255,0.3)",
-                    color: "#00d4ff",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    background: "rgba(13, 18, 48, 0.75)",
+                    border: `1.5px solid ${slide.accentColor}55`,
                     borderRadius: "50px",
-                    padding: "6px 18px",
-                    fontSize: "13px",
-                    fontWeight: "600",
+                    padding: "8px 20px",
                     marginBottom: "24px",
-                    letterSpacing: "0.5px",
+                    backdropFilter: "blur(12px)",
+                    boxShadow: `0 0 20px ${slide.accentColor}25`,
                   }}
                 >
-                  {slide.tag}
-                </span>
+                  <span
+                    style={{
+                      color: slide.accentColor,
+                      fontSize: "14px",
+                      fontWeight: "700",
+                      letterSpacing: "0.5px",
+                      fontFamily: "Outfit, sans-serif",
+                    }}
+                  >
+                    {slide.tag}
+                  </span>
+                </div>
 
+                {/* Main Headline */}
                 <h1
                   style={{
                     fontFamily: "Space Grotesk, sans-serif",
-                    fontSize: "clamp(2.5rem, 6vw, 5rem)",
+                    fontSize: "clamp(2.5rem, 5.5vw, 4.8rem)",
                     fontWeight: "900",
-                    lineHeight: "1.1",
-                    marginBottom: "20px",
-                    whiteSpace: "pre-line",
-                    background: "linear-gradient(135deg, #e2e8f0 0%, #00d4ff 100%)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                    backgroundClip: "text",
+                    lineHeight: "1.12",
+                    marginBottom: "22px",
+                    color: "#ffffff",
+                    letterSpacing: "-0.5px",
+                    textShadow: "0 4px 20px rgba(0,0,0,0.6)",
                   }}
                 >
                   {slide.title}
                 </h1>
 
+                {/* Subtitle */}
                 <p
                   style={{
-                    fontSize: "1.15rem",
-                    color: "var(--text-secondary)",
-                    maxWidth: "540px",
-                    lineHeight: "1.7",
+                    fontSize: "clamp(1.05rem, 1.8vw, 1.25rem)",
+                    color: "rgba(226, 232, 240, 0.9)",
+                    lineHeight: "1.65",
                     marginBottom: "36px",
+                    maxWidth: "580px",
+                    textShadow: "0 2px 10px rgba(0,0,0,0.5)",
                   }}
                 >
                   {slide.subtitle}
                 </p>
 
-                <div style={{ display: "flex", gap: "14px", flexWrap: "wrap" }}>
+                {/* Call to Actions */}
+                <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", alignItems: "center" }}>
                   <Link href="/tickets">
-                    <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "14px 32px", fontSize: "16px" }}>
-                      Browse Tickets <FaArrowRight size={14} />
+                    <button
+                      className="btn-primary"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "10px",
+                        padding: "15px 36px",
+                        fontSize: "16px",
+                        fontWeight: "700",
+                        boxShadow: "0 10px 25px rgba(0,212,255,0.35)",
+                      }}
+                    >
+                      Browse All Tickets <FaArrowRight size={14} />
                     </button>
                   </Link>
                   <Link href="/register">
-                    <button className="btn-outline" style={{ padding: "14px 32px", fontSize: "16px" }}>
-                      Get Started Free
+                    <button
+                      className="btn-outline"
+                      style={{
+                        padding: "15px 32px",
+                        fontSize: "16px",
+                        fontWeight: "600",
+                        background: "rgba(13, 18, 48, 0.6)",
+                        backdropFilter: "blur(10px)",
+                      }}
+                    >
+                      Create Free Account
                     </button>
                   </Link>
                 </div>
 
-                {/* Stats */}
-                <div style={{ display: "flex", gap: "36px", marginTop: "48px", flexWrap: "wrap" }}>
+                {/* Key Statistics */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "42px",
+                    marginTop: "52px",
+                    flexWrap: "wrap",
+                    paddingTop: "24px",
+                    borderTop: "1px solid rgba(255, 255, 255, 0.12)",
+                  }}
+                >
                   {[
-                    { value: "50K+", label: "Happy Travelers" },
-                    { value: "200+", label: "Routes Available" },
-                    { value: "4.9★", label: "User Rating" },
+                    { value: "50,000+", label: "Happy Travelers" },
+                    { value: "200+", label: "Nationwide Routes" },
+                    { value: "4.9 / 5.0", label: "Customer Rating" },
                   ].map((stat) => (
                     <div key={stat.label}>
-                      <div style={{ fontSize: "1.6rem", fontWeight: "800", color: "var(--color-primary)", fontFamily: "Space Grotesk, sans-serif" }}>
+                      <div
+                        style={{
+                          fontSize: "1.7rem",
+                          fontWeight: "800",
+                          color: "#00d4ff",
+                          fontFamily: "Space Grotesk, sans-serif",
+                          letterSpacing: "-0.5px",
+                        }}
+                      >
                         {stat.value}
                       </div>
-                      <div style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "2px" }}>
+                      <div
+                        style={{
+                          fontSize: "13px",
+                          color: "rgba(226, 232, 240, 0.75)",
+                          marginTop: "2px",
+                          fontWeight: "500",
+                        }}
+                      >
                         {stat.label}
                       </div>
                     </div>
@@ -185,10 +242,10 @@ export default function HeroSlider() {
         ))}
       </Swiper>
 
-      {/* Bottom wave */}
-      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, zIndex: 2 }}>
-        <svg viewBox="0 0 1440 80" style={{ display: "block", width: "100%" }}>
-          <path d="M0,40 C360,80 1080,0 1440,40 L1440,80 L0,80 Z" fill="var(--bg-primary)" />
+      {/* Elegant Bottom Wave transition */}
+      <div style={{ position: "absolute", bottom: -1, left: 0, right: 0, zIndex: 10, pointerEvents: "none" }}>
+        <svg viewBox="0 0 1440 60" style={{ display: "block", width: "100%", height: "45px" }} preserveAspectRatio="none">
+          <path d="M0,20 C360,55 1080,0 1440,25 L1440,60 L0,60 Z" fill="var(--bg-primary)" />
         </svg>
       </div>
     </section>
