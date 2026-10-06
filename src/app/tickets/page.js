@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
 import TicketCard from "@/components/tickets/TicketCard";
 import { FaSearch, FaFilter, FaSortAmountDown, FaSortAmountUp, FaBus, FaTrain, FaPlane, FaShip, FaTimes } from "react-icons/fa";
@@ -22,14 +23,31 @@ const mockTickets = [
   { _id: "12", title: "Dhaka to Tangail AC Bus", from: "Dhaka", to: "Tangail", price: 180, transportType: "Bus", quantity: 55, perks: ["AC"], image: "https://images.unsplash.com/photo-1519003722824-194d4455a60c?w=400&h=200&fit=crop", departureDate: "2026-11-12T08:00:00Z" },
 ];
 
-export default function AllTicketsPage() {
+function TicketsContent() {
+  const searchParams = useSearchParams();
+  const initialFrom = searchParams.get("from") || "";
+  const initialTo = searchParams.get("to") || "";
+  const initialType = searchParams.get("type") || "All";
+
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState({ from: "", to: "" });
-  const [transport, setTransport] = useState("All");
+  const [search, setSearch] = useState({ from: initialFrom, to: initialTo });
+  const [transport, setTransport] = useState(initialType);
   const [sort, setSort] = useState("none");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    if (searchParams.get("from") || searchParams.get("to") || searchParams.get("type")) {
+      setSearch({
+        from: searchParams.get("from") || "",
+        to: searchParams.get("to") || "",
+      });
+      if (searchParams.get("type")) {
+        setTransport(searchParams.get("type"));
+      }
+    }
+  }, [searchParams]);
 
   const fetchTickets = useCallback(async () => {
     setLoading(true);
@@ -252,5 +270,20 @@ export default function AllTicketsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AllTicketsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div style={{ minHeight: "100vh", paddingTop: "120px", textAlign: "center", color: "var(--text-secondary)" }}>
+          <div className="skeleton" style={{ width: "300px", height: "40px", margin: "0 auto 20px" }} />
+          Loading tickets...
+        </div>
+      }
+    >
+      <TicketsContent />
+    </Suspense>
   );
 }
