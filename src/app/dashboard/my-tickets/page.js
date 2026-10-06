@@ -3,7 +3,9 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { FaEdit, FaTrash, FaTicketAlt } from "react-icons/fa";
+import { FaEdit, FaTrash, FaTicketAlt, FaSync } from "react-icons/fa";
+
+const STATUS_FILTERS = ["all", "approved", "pending", "rejected"];
 
 const mockVendorTickets = [
   { _id: "v1", title: "Dhaka to Chittagong Express", from: "Dhaka", to: "Chittagong", price: 850, transportType: "Bus", quantity: 45, verificationStatus: "approved", image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=300&h=150&fit=crop" },
@@ -21,9 +23,14 @@ export default function MyTicketsPage() {
   const { data: session } = useSession();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("all");
   const [editingTicket, setEditingTicket] = useState(null);
   const [editPrice, setEditPrice] = useState("");
   const [editQty, setEditQty] = useState("");
+
+  const filteredTickets = statusFilter === "all"
+    ? tickets
+    : tickets.filter((t) => t.verificationStatus === statusFilter);
 
   const fetchTickets = async () => {
     try {
@@ -81,20 +88,48 @@ export default function MyTicketsPage() {
 
   return (
     <div>
-      <div style={{ marginBottom: "32px" }}>
-        <h1 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "6px" }}>My Added Tickets</h1>
-        <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>{tickets.length} ticket(s) submitted</p>
+      <div style={{ marginBottom: "24px", display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
+        <div>
+          <h1 style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "6px" }}>My Added Tickets</h1>
+          <p style={{ color: "var(--text-secondary)", fontSize: "14px" }}>{tickets.length} ticket(s) submitted · {filteredTickets.length} shown</p>
+        </div>
+        <button onClick={fetchTickets} className="btn-outline" style={{ display: "flex", alignItems: "center", gap: "8px", padding: "9px 20px", fontSize: "13px" }}>
+          <FaSync size={12} /> Refresh
+        </button>
       </div>
 
-      {tickets.length === 0 ? (
+      {/* Status filter tabs */}
+      <div style={{ display: "flex", gap: "8px", marginBottom: "24px", flexWrap: "wrap" }}>
+        {STATUS_FILTERS.map((f) => (
+          <button
+            key={f}
+            onClick={() => setStatusFilter(f)}
+            style={{
+              padding: "7px 18px", borderRadius: "8px", fontSize: "13px", fontWeight: "600", cursor: "pointer", border: "1.5px solid",
+              fontFamily: "Outfit, sans-serif", transition: "all 0.2s",
+              background: statusFilter === f ? "rgba(0,212,255,0.15)" : "transparent",
+              borderColor: statusFilter === f ? "rgba(0,212,255,0.4)" : "var(--border-color)",
+              color: statusFilter === f ? "#00d4ff" : "var(--text-secondary)",
+            }}
+          >
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </button>
+        ))}
+      </div>
+
+      {filteredTickets.length === 0 ? (
         <div style={{ textAlign: "center", padding: "80px 24px", background: "var(--bg-card)", borderRadius: "16px", border: "1px solid var(--border-color)" }}>
           <FaTicketAlt size={48} color="var(--text-muted)" style={{ marginBottom: "16px" }} />
-          <h3 style={{ fontSize: "20px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "8px" }}>No tickets added yet</h3>
-          <p style={{ color: "var(--text-secondary)" }}>Go to "Add Ticket" to submit your first ticket!</p>
+          <h3 style={{ fontSize: "20px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "8px" }}>
+            {tickets.length === 0 ? "No tickets added yet" : `No ${statusFilter} tickets`}
+          </h3>
+          <p style={{ color: "var(--text-secondary)" }}>
+            {tickets.length === 0 ? "Go to \"Add Ticket\" to submit your first ticket!" : "Try a different filter above."}
+          </p>
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" }}>
-          {tickets.map((ticket) => {
+          {filteredTickets.map((ticket) => {
             const s = statusStyle[ticket.verificationStatus] || statusStyle.pending;
             const isRejected = ticket.verificationStatus === "rejected";
             const isEditing = editingTicket === ticket._id;
