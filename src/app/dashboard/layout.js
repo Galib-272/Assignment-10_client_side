@@ -22,6 +22,7 @@ const vendorLinks = [
   { href: "/dashboard/my-tickets", icon: <FaList size={15} />, label: "My Tickets" },
   { href: "/dashboard/requested-bookings", icon: <FaClipboardList size={15} />, label: "Requested Bookings" },
   { href: "/dashboard/revenue", icon: <FaChartBar size={15} />, label: "Revenue Overview" },
+  { href: "/dashboard/advertise", icon: <FaBullhorn size={15} />, label: "Advertise Tickets" },
 ];
 
 const adminLinks = [
