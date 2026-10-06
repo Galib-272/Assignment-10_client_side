@@ -1,5 +1,6 @@
 "use client";
-import { FaRoute, FaArrowRight } from "react-icons/fa";
+import Link from "next/link";
+import { FaRoute, FaArrowRight, FaBus, FaTrain, FaPlane, FaShip } from "react-icons/fa";
 
 const routes = [
   { from: "Dhaka", to: "Chittagong", trips: "48 daily trips", price: "from ৳350", color: "#00d4ff" },
@@ -37,43 +38,44 @@ export default function PopularRoutes() {
         {/* Route cards */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "20px" }}>
           {routes.map((route, i) => (
-            <div
-              key={i}
-              className="ticket-card"
-              style={{
-                padding: "24px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                cursor: "pointer",
-                background: `linear-gradient(135deg, rgba(${route.color === "#00d4ff" ? "0,212,255" : route.color === "#7c3aed" ? "124,58,237" : route.color === "#f59e0b" ? "245,158,11" : route.color === "#10b981" ? "16,185,129" : "239,68,68"},0.06) 0%, var(--bg-card) 100%)`,
-              }}
-            >
-              <div style={{ flex: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
-                  <span style={{ fontSize: "16px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif" }}>
-                    {route.from}
-                  </span>
-                  <FaArrowRight size={12} color={route.color} />
-                  <span style={{ fontSize: "16px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif" }}>
-                    {route.to}
-                  </span>
+            <Link key={i} href={`/tickets?from=${encodeURIComponent(route.from)}&to=${encodeURIComponent(route.to)}`} style={{ textDecoration: "none" }}>
+              <div
+                className="ticket-card"
+                style={{
+                  padding: "24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  cursor: "pointer",
+                  background: `linear-gradient(135deg, rgba(${route.color === "#00d4ff" ? "0,212,255" : route.color === "#7c3aed" ? "124,58,237" : route.color === "#f59e0b" ? "245,158,11" : route.color === "#10b981" ? "16,185,129" : "239,68,68"},0.06) 0%, var(--bg-card) 100%)`,
+                }}
+              >
+                <div style={{ flex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                    <span style={{ fontSize: "16px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif" }}>
+                      {route.from}
+                    </span>
+                    <FaArrowRight size={12} color={route.color} />
+                    <span style={{ fontSize: "16px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif" }}>
+                      {route.to}
+                    </span>
+                  </div>
+                  <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>{route.trips}</div>
+                  <div style={{ fontSize: "14px", fontWeight: "700", color: route.color }}>{route.price}</div>
                 </div>
-                <div style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "4px" }}>{route.trips}</div>
-                <div style={{ fontSize: "14px", fontWeight: "700", color: route.color }}>{route.price}</div>
+                <div style={{
+                  width: "40px", height: "40px",
+                  background: `rgba(${route.color === "#00d4ff" ? "0,212,255" : route.color === "#7c3aed" ? "124,58,237" : route.color === "#f59e0b" ? "245,158,11" : route.color === "#10b981" ? "16,185,129" : "239,68,68"},0.12)`,
+                  borderRadius: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}>
+                  <FaRoute size={18} color={route.color} />
+                </div>
               </div>
-              <div style={{
-                width: "40px", height: "40px",
-                background: `rgba(${route.color === "#00d4ff" ? "0,212,255" : route.color === "#7c3aed" ? "124,58,237" : route.color === "#f59e0b" ? "245,158,11" : route.color === "#10b981" ? "16,185,129" : "239,68,68"},0.12)`,
-                borderRadius: "10px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                flexShrink: 0,
-              }}>
-                <FaRoute size={18} color={route.color} />
-              </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
