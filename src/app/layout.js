@@ -19,14 +19,23 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata = {
-  title: "TicketBari - Book Bus, Train, Launch & Flight Tickets",
+  title: "TicketBari - Book Bus, Train, Launch & Flight Tickets Online",
   description:
-    "Bangladesh's premier online ticket booking platform. Discover and book bus, train, launch, and flight tickets easily with TicketBari.",
-  keywords: "ticket booking, bus ticket, train ticket, flight ticket, Bangladesh",
+    "Bangladesh's premier online ticket booking platform. Discover and book bus, train, launch, and flight tickets easily with TicketBari. Best prices, instant confirmation.",
+  keywords: "ticket booking, bus ticket, train ticket, flight ticket, launch ticket, Bangladesh, Dhaka, Chittagong, online booking",
+  authors: [{ name: "TicketBari" }],
+  metadataBase: new URL("https://ticketbari.com"),
   openGraph: {
-    title: "TicketBari - Online Ticket Booking",
-    description: "Book travel tickets easily with TicketBari",
+    title: "TicketBari - Bangladesh's Best Ticket Booking Platform",
+    description: "Book bus, train, launch & flight tickets online. Best prices, instant booking, secure payment.",
     type: "website",
+    locale: "en_BD",
+    siteName: "TicketBari",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TicketBari - Book Tickets Online",
+    description: "Bangladesh's premier online ticket booking platform.",
   },
 };
 
