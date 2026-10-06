@@ -88,16 +88,70 @@ function BookingModal({ ticket, onClose, onSuccess }) {
         </p>
 
         <div style={{ marginBottom: "20px" }}>
-          <label className="form-label">Ticket Quantity (Max: {ticket.quantity})</label>
-          <input
-            type="number"
-            min={1}
-            max={ticket.quantity}
-            value={qty}
-            onChange={(e) => setQty(Math.min(ticket.quantity, Math.max(1, Number(e.target.value))))}
-            className="input-field"
-            id="booking-qty"
-          />
+          <label className="form-label">Ticket Quantity (Max available: {ticket.quantity})</label>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
+            <button
+              type="button"
+              onClick={() => setQty(q => Math.max(1, q - 1))}
+              disabled={qty <= 1}
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "10px",
+                border: "1px solid var(--border-color)",
+                background: "var(--bg-surface2)",
+                color: "var(--text-primary)",
+                fontSize: "20px",
+                fontWeight: "700",
+                cursor: qty <= 1 ? "not-allowed" : "pointer",
+                opacity: qty <= 1 ? 0.4 : 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              -
+            </button>
+            <div
+              style={{
+                flex: 1,
+                height: "42px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "10px",
+                border: "1px solid var(--border-color)",
+                background: "var(--bg-surface)",
+                fontSize: "18px",
+                fontWeight: "700",
+                color: "#00d4ff",
+              }}
+            >
+              {qty} {qty === 1 ? "Seat" : "Seats"}
+            </div>
+            <button
+              type="button"
+              onClick={() => setQty(q => Math.min(ticket.quantity, q + 1))}
+              disabled={qty >= ticket.quantity}
+              style={{
+                width: "42px",
+                height: "42px",
+                borderRadius: "10px",
+                border: "1px solid var(--border-color)",
+                background: "var(--bg-surface2)",
+                color: "var(--text-primary)",
+                fontSize: "20px",
+                fontWeight: "700",
+                cursor: qty >= ticket.quantity ? "not-allowed" : "pointer",
+                opacity: qty >= ticket.quantity ? 0.4 : 1,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              +
+            </button>
+          </div>
         </div>
 
         <div style={{ background: "var(--bg-surface2)", borderRadius: "12px", padding: "16px", marginBottom: "24px" }}>
