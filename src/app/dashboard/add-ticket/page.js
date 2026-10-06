@@ -416,7 +416,11 @@ export default function AddTicketPage() {
           <div>
             <label className="form-label">Departure Date & Time *</label>
             <input
-              {...register("departureDate", { required: "Required" })}
+              {...register("departureDate", {
+                required: "Departure date is required",
+                validate: (v) =>
+                  new Date(v) > new Date() || "Departure date must be in the future",
+              })}
               type="datetime-local"
               className="input-field"
               id="ticket-departure"
