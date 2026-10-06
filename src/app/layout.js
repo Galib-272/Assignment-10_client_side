@@ -24,6 +24,7 @@ export const metadata = {
     "Bangladesh's premier online ticket booking platform. Discover and book bus, train, launch, and flight tickets easily with TicketBari. Best prices, instant confirmation.",
   keywords: "ticket booking, bus ticket, train ticket, flight ticket, launch ticket, Bangladesh, Dhaka, Chittagong, online booking",
   authors: [{ name: "TicketBari" }],
+  referrer: "no-referrer",
   metadataBase: new URL("https://ticketbari.com"),
   openGraph: {
     title: "TicketBari - Bangladesh's Best Ticket Booking Platform",
@@ -42,6 +43,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="referrer" content="no-referrer" />
+      </head>
       <body className={`${outfit.variable} ${spaceGrotesk.variable}`}>
         <AuthProvider>
           <ThemeProvider>

@@ -132,14 +132,16 @@ const config = {
       }
       return true;
     },
-    jwt({ token, user, account }) {
+    jwt({ token, user, account, profile }) {
       if (user) {
         token.id = user.id || token.sub;
         token.role = user.role || "user";
         token.accessToken = user.accessToken || "mock_token_" + (user.id || token.sub);
+        token.picture = user.image || profile?.picture || token.picture;
       }
       if (account && account.provider === "google") {
         if (!token.role) token.role = "user";
+        if (profile?.picture) token.picture = profile.picture;
       }
       return token;
     },
@@ -148,6 +150,7 @@ const config = {
         session.user.id = token.id;
         session.user.role = token.role || "user";
         session.accessToken = token.accessToken;
+        session.user.image = token.picture || session.user.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user.name || "U")}&background=00d4ff&color=fff&size=100`;
       }
       return session;
     },

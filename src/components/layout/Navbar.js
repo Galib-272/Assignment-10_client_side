@@ -209,7 +209,13 @@ export default function Navbar() {
               >
                 <img
                   src={session.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=40`}
-                  alt={session.user?.name}
+                  alt={session.user?.name || "User Avatar"}
+                  referrerPolicy="no-referrer"
+                  crossOrigin="anonymous"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=40`;
+                  }}
                   style={{ width: "32px", height: "32px", borderRadius: "50%", objectFit: "cover" }}
                 />
                 <span style={{ color: "var(--text-primary)", fontSize: "14px", fontWeight: "500" }}>

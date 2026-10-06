@@ -87,7 +87,13 @@ export default function DashboardLayout({ children }) {
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
             <img
               src={session.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=80`}
-              alt={session.user?.name}
+              alt={session.user?.name || "User Avatar"}
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=80`;
+              }}
               style={{ width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", border: `2px solid ${roleColor}` }}
             />
             <div style={{ overflow: "hidden" }}>

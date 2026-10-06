@@ -32,7 +32,13 @@ export default function ProfilePage() {
             <div style={{ position: "relative", display: "inline-block", marginTop: "-50px", marginBottom: "16px" }}>
               <img
                 src={user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "U")}&background=00d4ff&color=fff&size=100`}
-                alt={user?.name}
+                alt={user?.name || "Profile Avatar"}
+                referrerPolicy="no-referrer"
+                crossOrigin="anonymous"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.name || "U")}&background=00d4ff&color=fff&size=100`;
+                }}
                 style={{ width: "100px", height: "100px", borderRadius: "50%", objectFit: "cover", border: `3px solid ${roleColor}`, boxShadow: `0 0 20px ${roleColor}44` }}
               />
               <div style={{ position: "absolute", bottom: "4px", right: "4px", width: "18px", height: "18px", background: "#10b981", borderRadius: "50%", border: "2px solid var(--bg-surface)" }} />
