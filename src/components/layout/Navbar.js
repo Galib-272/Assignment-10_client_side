@@ -37,6 +37,8 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const isDark = theme === "dark";
+
   return (
     <nav
       style={{
@@ -47,10 +49,14 @@ export default function Navbar() {
         zIndex: 999,
         transition: "all 0.3s ease",
         background: scrolled
-          ? "rgba(5,8,26,0.92)"
-          : "transparent",
-        backdropFilter: scrolled ? "blur(20px)" : "none",
-        borderBottom: scrolled ? "1px solid rgba(255,255,255,0.06)" : "none",
+          ? isDark
+            ? "rgba(5, 8, 26, 0.92)"
+            : "rgba(255, 255, 255, 0.94)"
+          : isDark
+            ? "rgba(5, 8, 26, 0.55)"
+            : "rgba(255, 255, 255, 0.75)",
+        backdropFilter: "blur(20px)",
+        borderBottom: `1px solid ${scrolled ? "var(--border-color)" : "transparent"}`,
         padding: "0 24px",
       }}
     >
@@ -153,21 +159,22 @@ export default function Navbar() {
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
+            aria-label="Toggle Light/Dark Theme"
             style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px",
-              width: "38px",
-              height: "38px",
+              background: isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(0, 0, 0, 0.05)",
+              border: `1px solid ${isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.1)"}`,
+              borderRadius: "10px",
+              width: "40px",
+              height: "40px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
               cursor: "pointer",
-              color: "var(--text-secondary)",
+              color: isDark ? "#f59e0b" : "#475569",
               transition: "all 0.2s",
             }}
           >
-            {theme === "dark" ? <FaSun size={15} /> : <FaMoon size={15} />}
+            {theme === "dark" ? <FaSun size={17} /> : <FaMoon size={17} />}
           </button>
 
           {/* Auth buttons / User menu */}
@@ -293,9 +300,9 @@ export default function Navbar() {
       {mobileOpen && (
         <div
           style={{
-            background: "rgba(5,8,26,0.97)",
+            background: isDark ? "rgba(5, 8, 26, 0.98)" : "rgba(255, 255, 255, 0.98)",
             backdropFilter: "blur(20px)",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
+            borderTop: "1px solid var(--border-color)",
             padding: "16px 24px 24px",
           }}
         >
