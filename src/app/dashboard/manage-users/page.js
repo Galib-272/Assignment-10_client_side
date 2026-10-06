@@ -191,6 +191,26 @@ export default function ManageUsersPage() {
         </p>
       </div>
 
+      {/* Overview Stat Cards */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+        <div className="card" style={{ padding: "18px" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase", fontWeight: "600", marginBottom: "6px" }}>Total Users</div>
+          <div style={{ fontSize: "24px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif" }}>{users.length}</div>
+        </div>
+        <div className="card" style={{ padding: "18px" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase", fontWeight: "600", marginBottom: "6px" }}>Vendors</div>
+          <div style={{ fontSize: "24px", fontWeight: "800", color: "#00d4ff", fontFamily: "Space Grotesk, sans-serif" }}>{users.filter(u => u.role === "vendor").length}</div>
+        </div>
+        <div className="card" style={{ padding: "18px" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase", fontWeight: "600", marginBottom: "6px" }}>Admins</div>
+          <div style={{ fontSize: "24px", fontWeight: "800", color: "#7c3aed", fontFamily: "Space Grotesk, sans-serif" }}>{users.filter(u => u.role === "admin").length}</div>
+        </div>
+        <div className="card" style={{ padding: "18px" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase", fontWeight: "600", marginBottom: "6px" }}>Standard Users</div>
+          <div style={{ fontSize: "24px", fontWeight: "800", color: "#10b981", fontFamily: "Space Grotesk, sans-serif" }}>{users.filter(u => u.role === "user").length}</div>
+        </div>
+      </div>
+
       {/* Role filter buttons */}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", marginBottom: "24px" }}>
         {["all", "user", "vendor", "admin"].map((r) => (
