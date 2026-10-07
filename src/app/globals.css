@@ -528,6 +528,39 @@ body {
   }
 }
 
+/* ─── Dashboard Responsive ─── */
+@media (max-width: 768px) {
+  .dashboard-hamburger {
+    display: flex !important;
+  }
+  .dashboard-sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    top: 0 !important;
+    padding-top: 70px;
+  }
+  .dashboard-sidebar.open {
+    transform: translateX(0);
+  }
+  .dashboard-main {
+    margin-left: 0 !important;
+    padding: 16px !important;
+    padding-top: 56px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .dashboard-hamburger {
+    display: none !important;
+  }
+  .dashboard-overlay {
+    display: none !important;
+  }
+  .dashboard-sidebar {
+    transform: translateX(0) !important;
+  }
+}
+
 /* ─── Hero Section ─── */
 .hero-section {
   margin-top: 70px; /* always clear the fixed navbar */

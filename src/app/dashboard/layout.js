@@ -1,12 +1,12 @@
 "use client";
 import { useSession } from "next-auth/react";
 import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   FaUser, FaTicketAlt, FaHistory, FaPlusCircle, FaList,
   FaClipboardList, FaChartBar, FaUsersCog, FaBullhorn,
-  FaShieldAlt, FaBus, FaSignOutAlt, FaTachometerAlt
+  FaBus, FaSignOutAlt, FaBars, FaTimes
 } from "react-icons/fa";
 import { signOut } from "next-auth/react";
 
@@ -42,10 +42,16 @@ export default function DashboardLayout({ children }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") router.replace("/login");
   }, [status, router]);
+
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [pathname]);
 
   if (status === "loading") {
     return (
@@ -63,10 +69,123 @@ export default function DashboardLayout({ children }) {
   const roleLabel = role === "admin" ? "Admin" : role === "vendor" ? "Vendor" : "User";
   const roleColor = role === "admin" ? "#f59e0b" : role === "vendor" ? "#7c3aed" : "#00d4ff";
 
+  const sidebarContent = (
+    <>
+      {/* User info */}
+      <div style={{ padding: "24px 16px 20px", borderBottom: "1px solid var(--border-color)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <img
+            src={session.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=80`}
+            alt={session.user?.name || "User Avatar"}
+            referrerPolicy="no-referrer"
+            crossOrigin="anonymous"
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=80`;
+            }}
+            style={{ width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", border: `2px solid ${roleColor}`, flexShrink: 0 }}
+          />
+          <div style={{ overflow: "hidden" }}>
+            <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {session.user?.name}
+            </div>
+            <div style={{ fontSize: "11px", fontWeight: "700", color: roleColor, letterSpacing: "0.5px", marginTop: "2px" }}>
+              {roleLabel}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Nav links */}
+      <nav style={{ padding: "12px 8px", flex: 1 }}>
+        <div style={{ fontSize: "10px", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "1.5px", textTransform: "uppercase", padding: "8px 10px", marginBottom: "4px" }}>
+          {roleLabel} Dashboard
+        </div>
+        {links.map((link) => {
+          const isActive = pathname === link.href;
+          return (
+            <Link key={link.href} href={link.href} style={{ textDecoration: "none" }}>
+              <div
+                className={`sidebar-link ${isActive ? "active" : ""}`}
+                style={isActive ? { borderRight: "3px solid var(--color-primary)", color: "var(--color-primary)", background: "rgba(0,212,255,0.1)" } : {}}
+              >
+                {link.icon}
+                <span>{link.label}</span>
+              </div>
+            </Link>
+          );
+        })}
+
+        {/* Separator & Home link */}
+        <div style={{ height: "1px", background: "var(--border-color)", margin: "12px 0" }} />
+        <Link href="/" style={{ textDecoration: "none" }}>
+          <div className="sidebar-link">
+            <FaBus size={15} />
+            <span>Back to Home</span>
+          </div>
+        </Link>
+      </nav>
+
+      {/* Logout */}
+      <div style={{ padding: "12px 8px 20px", borderTop: "1px solid var(--border-color)" }}>
+        <button
+          onClick={() => signOut({ callbackUrl: "/" })}
+          style={{ width: "100%", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
+        >
+          <div className="sidebar-link" style={{ color: "var(--color-error)" }}>
+            <FaSignOutAlt size={15} />
+            <span>Logout</span>
+          </div>
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <div style={{ minHeight: "100vh", display: "flex", background: "var(--bg-primary)", paddingTop: "70px" }}>
+
+      {/* Mobile hamburger button */}
+      <button
+        className="dashboard-hamburger"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        aria-label="Toggle sidebar"
+        style={{
+          position: "fixed",
+          top: "78px",
+          left: "12px",
+          zIndex: 300,
+          background: "var(--bg-surface)",
+          border: "1px solid var(--border-color)",
+          borderRadius: "8px",
+          width: "38px",
+          height: "38px",
+          display: "none",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          color: "var(--text-primary)",
+        }}
+      >
+        {sidebarOpen ? <FaTimes size={16} /> : <FaBars size={16} />}
+      </button>
+
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="dashboard-overlay"
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 150,
+          }}
+        />
+      )}
+
       {/* Sidebar */}
       <aside
+        className={`dashboard-sidebar${sidebarOpen ? " open" : ""}`}
         style={{
           width: "260px",
           flexShrink: 0,
@@ -79,80 +198,14 @@ export default function DashboardLayout({ children }) {
           left: 0,
           bottom: 0,
           overflowY: "auto",
-          zIndex: 100,
+          zIndex: 200,
         }}
       >
-        {/* User info */}
-        <div style={{ padding: "24px 16px 20px", borderBottom: "1px solid var(--border-color)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <img
-              src={session.user?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=80`}
-              alt={session.user?.name || "User Avatar"}
-              referrerPolicy="no-referrer"
-              crossOrigin="anonymous"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(session.user?.name || "U")}&background=00d4ff&color=fff&size=80`;
-              }}
-              style={{ width: "44px", height: "44px", borderRadius: "50%", objectFit: "cover", border: `2px solid ${roleColor}` }}
-            />
-            <div style={{ overflow: "hidden" }}>
-              <div style={{ fontSize: "14px", fontWeight: "700", color: "var(--text-primary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {session.user?.name}
-              </div>
-              <div style={{ fontSize: "11px", fontWeight: "700", color: roleColor, letterSpacing: "0.5px", marginTop: "2px" }}>
-                {roleLabel}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Nav links */}
-        <nav style={{ padding: "12px 8px", flex: 1 }}>
-          <div style={{ fontSize: "10px", fontWeight: "700", color: "var(--text-muted)", letterSpacing: "1.5px", textTransform: "uppercase", padding: "8px 10px", marginBottom: "4px" }}>
-            {roleLabel} Dashboard
-          </div>
-          {links.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link key={link.href} href={link.href} style={{ textDecoration: "none" }}>
-                <div
-                  className={`sidebar-link ${isActive ? "active" : ""}`}
-                  style={isActive ? { borderRight: "3px solid var(--color-primary)", color: "var(--color-primary)", background: "rgba(0,212,255,0.1)" } : {}}
-                >
-                  {link.icon}
-                  <span>{link.label}</span>
-                </div>
-              </Link>
-            );
-          })}
-
-          {/* Separator & Home link */}
-          <div style={{ height: "1px", background: "var(--border-color)", margin: "12px 0" }} />
-          <Link href="/" style={{ textDecoration: "none" }}>
-            <div className="sidebar-link">
-              <FaBus size={15} />
-              <span>Back to Home</span>
-            </div>
-          </Link>
-        </nav>
-
-        {/* Logout */}
-        <div style={{ padding: "12px 8px 20px", borderTop: "1px solid var(--border-color)" }}>
-          <button
-            onClick={() => signOut({ callbackUrl: "/" })}
-            style={{ width: "100%", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}
-          >
-            <div className="sidebar-link" style={{ color: "var(--color-error)" }}>
-              <FaSignOutAlt size={15} />
-              <span>Logout</span>
-            </div>
-          </button>
-        </div>
+        {sidebarContent}
       </aside>
 
       {/* Main content */}
-      <main style={{ flex: 1, marginLeft: "260px", padding: "32px", minHeight: "calc(100vh - 70px)", overflowX: "hidden" }}>
+      <main className="dashboard-main" style={{ flex: 1, marginLeft: "260px", padding: "32px", minHeight: "calc(100vh - 70px)", overflowX: "hidden" }}>
         {children}
       </main>
     </div>
