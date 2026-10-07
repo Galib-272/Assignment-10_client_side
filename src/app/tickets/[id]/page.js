@@ -64,25 +64,7 @@ function BookingModal({ ticket, onClose, onSuccess }) {
     try {
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/bookings`,
-        {
-          ticketId: ticket._id,
-          quantity: qty,
-          userImage: session?.user?.image || "",
-          ticketTitle: ticket.title,
-          ticketData: {
-            title: ticket.title,
-            from: ticket.from,
-            to: ticket.to,
-            price: ticket.price,
-            transportType: ticket.transportType,
-            quantity: ticket.quantity,
-            departureDate: ticket.departureDate,
-            image: ticket.image,
-            vendorName: ticket.vendorName,
-            vendorEmail: ticket.vendorEmail,
-            perks: ticket.perks,
-          },
-        },
+        { ticketId: ticket._id, quantity: qty, userImage: session?.user?.image || "" },
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
