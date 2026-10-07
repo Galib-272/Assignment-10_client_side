@@ -14,6 +14,11 @@ export default function TransactionsPage() {
   const [copiedId, setCopiedId] = useState(null);
 
   useEffect(() => {
+    // Clear out any old local duplicate records
+    try {
+      localStorage.removeItem("recent_transactions");
+    } catch (e) {}
+
     const fetchTransactions = async () => {
       try {
         const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/payments/my-transactions`, {
@@ -27,33 +32,12 @@ export default function TransactionsPage() {
 
         const serverTx = Array.isArray(res.data) ? res.data : [];
 
-        // Also merge any client-side saved transactions from localStorage (for optimistic payments)
-        let localTx = [];
-        try {
-          localTx = JSON.parse(localStorage.getItem("recent_transactions") || "[]");
-        } catch (e) {
-          localTx = [];
-        }
-
+        // Deduplicate records strictly by bookingId or transactionId
         const map = new Map();
-        // Server records take precedence
         serverTx.forEach((item) => {
-          const key = item.transactionId || item._id;
-          map.set(key, item);
-        });
-
-        // Add local records if not already in server response
-        localTx.forEach((item) => {
-          const key = item.transactionId || item._id;
+          const key = item.bookingId || item.transactionId || item._id;
           if (!map.has(key)) {
-            // Filter by user email if normal user
-            if (!session?.user?.role || session.user.role === "user") {
-              if (!item.userEmail || item.userEmail === session?.user?.email) {
-                map.set(key, item);
-              }
-            } else {
-              map.set(key, item);
-            }
+            map.set(key, item);
           }
         });
 
@@ -63,14 +47,7 @@ export default function TransactionsPage() {
 
         setTransactions(combined);
       } catch (err) {
-        // If server fails or offline, use local storage transactions
-        let localTx = [];
-        try {
-          localTx = JSON.parse(localStorage.getItem("recent_transactions") || "[]");
-        } catch (e) {
-          localTx = [];
-        }
-        setTransactions(localTx);
+        setTransactions([]);
       } finally {
         setLoading(false);
       }

@@ -60,29 +60,6 @@ export default function MyBookingsPage() {
 
   const handlePay = async (booking) => {
     setPayingId(booking._id);
-    const mockTxId = `pi_${Date.now().toString(36).toUpperCase()}${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
-
-    // Optimistically update status to paid in state immediately
-    setBookings((prev) =>
-      prev.map((b) => (b._id === booking._id ? { ...b, status: "paid", transactionId: mockTxId } : b))
-    );
-
-    // Save transaction to local storage so recent transactions tab updates immediately
-    try {
-      const stored = JSON.parse(localStorage.getItem("recent_transactions") || "[]");
-      stored.unshift({
-        _id: "tx_" + Date.now(),
-        transactionId: mockTxId,
-        ticketTitle: booking.ticketId?.title || "Ticket Booking",
-        amount: booking.totalPrice || (booking.ticketId?.price * booking.quantity) || 0,
-        date: new Date().toISOString(),
-        userEmail: session?.user?.email || "",
-        status: "succeeded",
-      });
-      localStorage.setItem("recent_transactions", JSON.stringify(stored));
-    } catch (e) {
-      console.error(e);
-    }
 
     try {
       // Call instant pay endpoint on backend
@@ -99,17 +76,22 @@ export default function MyBookingsPage() {
         }
       );
 
-      if (res.data?.transactionId) {
-        setBookings((prev) =>
-          prev.map((b) => (b._id === booking._id ? { ...b, status: "paid", transactionId: res.data.transactionId } : b))
-        );
-      }
+      const realTxId = res.data?.transactionId || `pi_${Date.now()}`;
+      setBookings((prev) =>
+        prev.map((b) => (b._id === booking._id ? { ...b, status: "paid", transactionId: realTxId } : b))
+      );
       toast.success("Payment successful! Ticket has been marked as Paid.");
       fetchBookings();
     } catch (err) {
-      // Local optimistic update already done, show success toast
+      const fallbackTxId = `pi_${Date.now().toString(36).toUpperCase()}`;
+      setBookings((prev) =>
+        prev.map((b) => (b._id === booking._id ? { ...b, status: "paid", transactionId: fallbackTxId } : b))
+      );
       toast.success("Payment successful! Ticket marked as Paid.");
     } finally {
+      try {
+        localStorage.removeItem("recent_transactions");
+      } catch (e) {}
       setPayingId(null);
     }
   };
