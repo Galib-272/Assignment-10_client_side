@@ -246,7 +246,7 @@ function TicketsContent() {
 
         {/* Grid */}
         {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "24px" }}>
+          <div className="ticket-grid">
             {[...Array(PAGE_SIZE)].map((_, i) => (
               <div key={i} style={{ borderRadius: "16px", overflow: "hidden" }}>
                 <div className="skeleton" style={{ height: "200px" }} />
@@ -265,7 +265,7 @@ function TicketsContent() {
             <p style={{ color: "var(--text-secondary)" }}>Try adjusting your search filters</p>
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "24px" }}>
+          <div className="ticket-grid">
             {tickets.map((ticket) => (
               <TicketCard key={ticket._id} ticket={ticket} />
             ))}

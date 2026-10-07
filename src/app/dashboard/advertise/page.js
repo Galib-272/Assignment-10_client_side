@@ -271,11 +271,7 @@ export default function AdvertisePage() {
       </div>
 
       {/* Tickets Grid */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-        gap: "24px"
-      }}>
+      <div className="ticket-grid">
         {filteredTickets.map((ticket) => {
           const isAdv = ticket.isAdvertised;
           const isAdmin = session?.user?.role === "admin";

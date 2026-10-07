@@ -56,7 +56,7 @@ export default function LatestTickets() {
 
         {/* Grid */}
         {loading ? (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "24px" }}>
+          <div className="ticket-grid">
             {[...Array(6)].map((_, i) => (
               <div key={i} style={{ borderRadius: "16px", overflow: "hidden" }}>
                 <div className="skeleton" style={{ height: "200px" }} />
@@ -69,7 +69,7 @@ export default function LatestTickets() {
             ))}
           </div>
         ) : (
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "24px" }}>
+          <div className="ticket-grid">
             {tickets.map((ticket) => (
               <TicketCard key={ticket._id} ticket={ticket} />
             ))}

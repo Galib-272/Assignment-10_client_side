@@ -139,7 +139,7 @@ export default function MyTicketsPage() {
           </p>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "20px" }}>
+        <div className="ticket-grid">
           {filteredTickets.map((ticket) => {
             const s = statusStyle[ticket.verificationStatus] || statusStyle.pending;
             const isRejected = ticket.verificationStatus === "rejected";

@@ -691,3 +691,22 @@ body {
   }
 }
 
+/* Responsive ticket card grid: 1 col mobile, 2 col tablet, 3 col desktop */
+.ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 1024px) {
+  .ticket-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .ticket-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
