@@ -64,51 +64,53 @@ export default function RequestedBookingsPage() {
         </div>
       ) : (
         <div style={{ background: "var(--bg-card)", borderRadius: "16px", border: "1px solid var(--border-color)", overflow: "hidden" }}>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Ticket</th>
-                <th>Qty</th>
-                <th>Total</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {requests.map((req) => {
-                const total = req.ticketId?.price * req.quantity;
-                return (
-                  <tr key={req._id}>
-                    <td>
-                      <div style={{ fontWeight: "600", color: "var(--text-primary)" }}>{req.userId?.name}</div>
-                      <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{req.userId?.email}</div>
-                    </td>
-                    <td style={{ fontWeight: "500", maxWidth: "180px" }}>{req.ticketId?.title}</td>
-                    <td style={{ fontWeight: "700" }}>{req.quantity}</td>
-                    <td style={{ color: "#00d4ff", fontWeight: "700" }}>৳{total?.toLocaleString()}</td>
-                    <td>
-                      <span className={`badge ${req.status === "accepted" ? "badge-accepted" : req.status === "rejected" ? "badge-rejected" : "badge-pending"}`}>
-                        {req.status}
-                      </span>
-                    </td>
-                    <td>
-                      {req.status === "pending" && (
-                        <div style={{ display: "flex", gap: "8px" }}>
-                          <button onClick={() => handleAction(req._id, "accepted")} className="btn-success" style={{ display: "flex", alignItems: "center", gap: "5px", padding: "7px 14px", fontSize: "12px" }}>
-                            <FaCheck size={11} /> Accept
-                          </button>
-                          <button onClick={() => handleAction(req._id, "rejected")} className="btn-danger" style={{ display: "flex", alignItems: "center", gap: "5px", padding: "7px 14px", fontSize: "12px" }}>
-                            <FaTimes size={11} /> Reject
-                          </button>
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="table-responsive-wrapper">
+            <table className="data-table" style={{ width: "100%", minWidth: "660px" }}>
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Ticket</th>
+                  <th>Qty</th>
+                  <th>Total</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {requests.map((req) => {
+                  const total = req.ticketId?.price * req.quantity;
+                  return (
+                    <tr key={req._id}>
+                      <td>
+                        <div style={{ fontWeight: "600", color: "var(--text-primary)" }}>{req.userId?.name}</div>
+                        <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{req.userId?.email}</div>
+                      </td>
+                      <td style={{ fontWeight: "500", maxWidth: "200px" }}>{req.ticketId?.title}</td>
+                      <td style={{ fontWeight: "700" }}>{req.quantity}</td>
+                      <td style={{ color: "#00d4ff", fontWeight: "700" }}>৳{total?.toLocaleString()}</td>
+                      <td>
+                        <span className={`badge ${req.status === "accepted" ? "badge-accepted" : req.status === "rejected" ? "badge-rejected" : "badge-pending"}`}>
+                          {req.status}
+                        </span>
+                      </td>
+                      <td>
+                        {req.status === "pending" && (
+                          <div style={{ display: "flex", gap: "8px", whiteSpace: "nowrap" }}>
+                            <button onClick={() => handleAction(req._id, "accepted")} className="btn-success" style={{ display: "flex", alignItems: "center", gap: "5px", padding: "7px 14px", fontSize: "12px" }}>
+                              <FaCheck size={11} /> Accept
+                            </button>
+                            <button onClick={() => handleAction(req._id, "rejected")} className="btn-danger" style={{ display: "flex", alignItems: "center", gap: "5px", padding: "7px 14px", fontSize: "12px" }}>
+                              <FaTimes size={11} /> Reject
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

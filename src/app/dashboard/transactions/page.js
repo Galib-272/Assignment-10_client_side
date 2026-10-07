@@ -94,14 +94,14 @@ export default function TransactionsPage() {
       </div>
 
       {/* Summary cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "16px", marginBottom: "24px" }}>
+      <div className="stats-grid-responsive">
         <div className="card" style={{ padding: "18px" }}>
           <div style={{ color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase", fontWeight: "600", marginBottom: "4px" }}>Total Volume</div>
-          <div style={{ fontSize: "24px", fontWeight: "800", color: "#10b981", fontFamily: "Space Grotesk, sans-serif" }}>৳{totalAmount.toLocaleString()}</div>
+          <div className="stat-value" style={{ fontSize: "24px", fontWeight: "800", color: "#10b981", fontFamily: "Space Grotesk, sans-serif" }}>৳{totalAmount.toLocaleString()}</div>
         </div>
         <div className="card" style={{ padding: "18px" }}>
           <div style={{ color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase", fontWeight: "600", marginBottom: "4px" }}>Total Records</div>
-          <div style={{ fontSize: "24px", fontWeight: "800", color: "#00d4ff", fontFamily: "Space Grotesk, sans-serif" }}>{transactions.length}</div>
+          <div className="stat-value" style={{ fontSize: "24px", fontWeight: "800", color: "#00d4ff", fontFamily: "Space Grotesk, sans-serif" }}>{transactions.length}</div>
         </div>
       </div>
 
@@ -130,8 +130,8 @@ export default function TransactionsPage() {
         </div>
       ) : (
         <div style={{ background: "var(--bg-card)", borderRadius: "16px", border: "1px solid var(--border-color)", overflow: "hidden" }}>
-          <div style={{ overflowX: "auto" }}>
-            <table className="data-table" style={{ width: "100%" }}>
+          <div className="table-responsive-wrapper">
+            <table className="data-table" style={{ width: "100%", minWidth: "700px" }}>
               <thead>
                 <tr>
                   <th>Transaction ID</th>

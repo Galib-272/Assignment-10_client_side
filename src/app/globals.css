@@ -612,3 +612,82 @@ body {
   }
 }
 
+/* ─── Ticket Details Responsive Layout ─── */
+.ticket-details-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+}
+.ticket-details-img-box {
+  border-radius: 20px;
+  overflow: hidden;
+  margin-bottom: 28px;
+  position: relative;
+  height: 360px;
+}
+.ticket-details-sidebar {
+  position: sticky;
+  top: 90px;
+}
+
+@media (max-width: 960px) {
+  .ticket-details-layout {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .ticket-details-sidebar {
+    position: static !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .ticket-details-img-box {
+    height: 220px !important;
+    border-radius: 14px !important;
+    margin-bottom: 20px !important;
+  }
+  .ticket-details-container {
+    padding: 16px 12px !important;
+  }
+  .ticket-title-responsive {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* ─── Dashboard Responsive Tables & Grids ─── */
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table-responsive-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+.table-responsive-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(0, 212, 255, 0.3);
+  border-radius: 3px;
+}
+.table-responsive-wrapper::-webkit-scrollbar-track {
+  background: var(--bg-surface2);
+}
+
+.stats-grid-responsive {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 640px) {
+  .stats-grid-responsive {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  .stats-grid-responsive .card {
+    padding: 14px !important;
+  }
+  .stats-grid-responsive .stat-value {
+    font-size: 20px !important;
+  }
+}
+

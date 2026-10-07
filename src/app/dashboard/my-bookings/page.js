@@ -163,7 +163,7 @@ export default function MyBookingsPage() {
           <p style={{ color: "var(--text-secondary)" }}>Your booking entries will appear here</p>
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "24px" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "20px" }}>
           {filteredBookings.map((booking) => {
             const ticket = booking.ticketId;
             const total = ticket?.price * booking.quantity;

@@ -91,91 +91,86 @@ export default function RevenuePage() {
       </div>
 
       {/* KPI Cards */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-        gap: "20px",
-        marginBottom: "36px"
-      }}>
+      <div className="stats-grid-responsive">
         {/* Card 1 */}
-        <div className="card" style={{ padding: "24px", position: "relative", overflow: "hidden" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
-            <span style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+        <div className="card" style={{ padding: "20px", position: "relative", overflow: "hidden", border: "1px solid rgba(0, 212, 255, 0.2)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+            <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Total Earnings
             </span>
             <div style={{
-              width: "40px",
-              height: "40px",
+              width: "38px",
+              height: "38px",
               borderRadius: "10px",
               background: "rgba(0, 212, 255, 0.12)",
               color: "var(--color-primary)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "18px"
+              fontSize: "17px"
             }}>
               <FaDollarSign />
             </div>
           </div>
-          <div style={{ fontSize: "30px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "8px" }}>
+          <div className="stat-value" style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "6px" }}>
             ৳{stats.totalRevenue.toLocaleString()}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--color-success)" }}>
             <FaArrowUp size={11} />
-            <span>+18.4% from last month</span>
+            <span>+18.4% growth</span>
           </div>
         </div>
 
         {/* Card 2 */}
-        <div className="card" style={{ padding: "24px", position: "relative", overflow: "hidden" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
-            <span style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+        <div className="card" style={{ padding: "20px", position: "relative", overflow: "hidden", border: "1px solid rgba(124, 58, 237, 0.2)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+            <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Tickets Sold
             </span>
             <div style={{
-              width: "40px",
-              height: "40px",
+              width: "38px",
+              height: "38px",
               borderRadius: "10px",
               background: "rgba(124, 58, 237, 0.12)",
               color: "var(--color-secondary)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "18px"
+              fontSize: "17px"
             }}>
               <FaTicketAlt />
             </div>
           </div>
-          <div style={{ fontSize: "30px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "8px" }}>
+          <div className="stat-value" style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "6px" }}>
             {stats.ticketsSold}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--color-success)" }}>
             <FaArrowUp size={11} />
-            <span>+12 new this week</span>
+            <span>+12 this week</span>
           </div>
         </div>
 
         {/* Card 3 */}
-        <div className="card" style={{ padding: "24px", position: "relative", overflow: "hidden" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
-            <span style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+        <div className="card" style={{ padding: "20px", position: "relative", overflow: "hidden", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+            <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Active Listings
             </span>
             <div style={{
-              width: "40px",
-              height: "40px",
+              width: "38px",
+              height: "38px",
               borderRadius: "10px",
               background: "rgba(16, 185, 129, 0.12)",
               color: "var(--color-success)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "18px"
+              fontSize: "17px"
             }}>
               <FaChartLine />
             </div>
           </div>
-          <div style={{ fontSize: "30px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "8px" }}>
+          <div className="stat-value" style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "6px" }}>
             {stats.activeListings}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--text-muted)" }}>
@@ -184,26 +179,26 @@ export default function RevenuePage() {
         </div>
 
         {/* Card 4 */}
-        <div className="card" style={{ padding: "24px", position: "relative", overflow: "hidden" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "14px" }}>
-            <span style={{ fontSize: "13px", fontWeight: "600", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+        <div className="card" style={{ padding: "20px", position: "relative", overflow: "hidden", border: "1px solid rgba(245, 158, 11, 0.2)" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "12px" }}>
+            <span style={{ fontSize: "12px", fontWeight: "600", color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
               Pending Action
             </span>
             <div style={{
-              width: "40px",
-              height: "40px",
+              width: "38px",
+              height: "38px",
               borderRadius: "10px",
               background: "rgba(245, 158, 11, 0.12)",
               color: "var(--color-accent)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              fontSize: "18px"
+              fontSize: "17px"
             }}>
               <FaCalendarCheck />
             </div>
           </div>
-          <div style={{ fontSize: "30px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "8px" }}>
+          <div className="stat-value" style={{ fontSize: "28px", fontWeight: "800", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", marginBottom: "6px" }}>
             {stats.pendingBookings}
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "var(--color-accent)" }}>
@@ -213,8 +208,8 @@ export default function RevenuePage() {
       </div>
 
       {/* Visual Chart Section */}
-      <div className="card" style={{ padding: "28px", marginBottom: "36px" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "28px" }}>
+      <div className="card" style={{ padding: "24px 20px", marginBottom: "32px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px", flexWrap: "wrap", gap: "10px" }}>
           <div>
             <h2 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "4px" }}>
               Monthly Revenue Performance
@@ -236,65 +231,68 @@ export default function RevenuePage() {
           </span>
         </div>
 
-        {/* Bar chart representation */}
-        <div style={{ display: "flex", alignItems: "flex-end", gap: "18px", height: "200px", paddingBottom: "30px", borderBottom: "1px solid var(--border-color)" }}>
-          {monthlySales.map((m) => {
-            const heightPercent = Math.round((m.revenue / maxRevenue) * 100);
-            return (
-              <div key={m.month} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", height: "100%", justifyContent: "flex-end" }}>
-                <span style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: "600" }}>
-                  ৳{m.revenue}
-                </span>
-                <div style={{
-                  width: "100%",
-                  height: `${heightPercent}%`,
-                  minHeight: "8px",
-                  background: "linear-gradient(180deg, var(--color-primary) 0%, rgba(124, 58, 237, 0.8) 100%)",
-                  borderRadius: "6px 6px 2px 2px",
-                  transition: "all 0.3s ease",
-                  position: "relative"
-                }} />
-                <span style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: "500", marginTop: "4px" }}>
-                  {m.month}
-                </span>
-              </div>
-            );
-          })}
+        {/* Bar chart representation with horizontal scroll on small screens */}
+        <div className="table-responsive-wrapper">
+          <div style={{ display: "flex", alignItems: "flex-end", gap: "16px", height: "200px", minWidth: "460px", paddingBottom: "24px", borderBottom: "1px solid var(--border-color)" }}>
+            {monthlySales.map((m) => {
+              const heightPercent = Math.round((m.revenue / maxRevenue) * 100);
+              return (
+                <div key={m.month} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", height: "100%", justifyContent: "flex-end" }}>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: "600" }}>
+                    ৳{m.revenue}
+                  </span>
+                  <div style={{
+                    width: "100%",
+                    height: `${Math.max(8, heightPercent)}%`,
+                    background: "linear-gradient(180deg, var(--color-primary) 0%, rgba(124, 58, 237, 0.85) 100%)",
+                    borderRadius: "6px 6px 2px 2px",
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 2px 8px rgba(0, 212, 255, 0.2)",
+                  }} />
+                  <span style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: "600", marginTop: "4px" }}>
+                    {m.month}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* Recent Sales Table */}
-      <div className="card" style={{ padding: "28px" }}>
-        <h2 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-primary)", marginBottom: "20px" }}>
-          Recent Transactions
-        </h2>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+      <div className="card" style={{ padding: "0", overflow: "hidden" }}>
+        <div style={{ padding: "20px 24px", borderBottom: "1px solid var(--border-color)" }}>
+          <h2 style={{ fontSize: "18px", fontWeight: "700", color: "var(--text-primary)", margin: 0 }}>
+            Recent Transactions
+          </h2>
+        </div>
+        <div className="table-responsive-wrapper">
+          <table style={{ width: "100%", minWidth: "620px", borderCollapse: "collapse", fontSize: "14px" }}>
             <thead>
-              <tr style={{ borderBottom: "1px solid var(--border-color)", textAlign: "left", color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase" }}>
-                <th style={{ padding: "12px 16px" }}>Transaction ID</th>
-                <th style={{ padding: "12px 16px" }}>Customer</th>
-                <th style={{ padding: "12px 16px" }}>Ticket Route</th>
-                <th style={{ padding: "12px 16px" }}>Date</th>
-                <th style={{ padding: "12px 16px", textAlign: "right" }}>Amount</th>
+              <tr style={{ borderBottom: "1px solid var(--border-color)", background: "rgba(255, 255, 255, 0.02)", textAlign: "left", color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase" }}>
+                <th style={{ padding: "14px 20px" }}>Transaction ID</th>
+                <th style={{ padding: "14px 20px" }}>Customer</th>
+                <th style={{ padding: "14px 20px" }}>Ticket Route</th>
+                <th style={{ padding: "14px 20px" }}>Date</th>
+                <th style={{ padding: "14px 20px", textAlign: "right" }}>Amount</th>
               </tr>
             </thead>
             <tbody>
               {recentSales.map((sale) => (
-                <tr key={sale.id} style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-                  <td style={{ padding: "14px 16px", fontWeight: "600", color: "var(--color-primary)", fontFamily: "monospace" }}>
+                <tr key={sale.id} style={{ borderBottom: "1px solid rgba(255, 255, 255, 0.04)" }}>
+                  <td style={{ padding: "14px 20px", fontWeight: "600", color: "var(--color-primary)", fontFamily: "monospace" }}>
                     {sale.id}
                   </td>
-                  <td style={{ padding: "14px 16px", color: "var(--text-primary)" }}>
+                  <td style={{ padding: "14px 20px", color: "var(--text-primary)" }}>
                     {sale.customer}
                   </td>
-                  <td style={{ padding: "14px 16px", color: "var(--text-secondary)" }}>
+                  <td style={{ padding: "14px 20px", color: "var(--text-secondary)" }}>
                     {sale.ticket}
                   </td>
-                  <td style={{ padding: "14px 16px", color: "var(--text-muted)", fontSize: "13px" }}>
+                  <td style={{ padding: "14px 20px", color: "var(--text-muted)", fontSize: "13px" }}>
                     {sale.date}
                   </td>
-                  <td style={{ padding: "14px 16px", textAlign: "right", fontWeight: "700", color: "var(--color-success)" }}>
+                  <td style={{ padding: "14px 20px", textAlign: "right", fontWeight: "700", color: "var(--color-success)" }}>
                     ৳{sale.amount.toLocaleString()}
                   </td>
                 </tr>

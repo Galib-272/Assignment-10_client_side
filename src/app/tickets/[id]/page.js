@@ -269,12 +269,12 @@ export default function TicketDetailsPage() {
         </Link>
       </div>
 
-      <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "24px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 380px", gap: "32px" }}>
+      <div className="ticket-details-container" style={{ maxWidth: "1280px", margin: "0 auto", padding: "24px" }}>
+        <div className="ticket-details-layout">
           {/* Left: Details */}
           <div>
             {/* Image */}
-            <div style={{ borderRadius: "20px", overflow: "hidden", marginBottom: "28px", position: "relative", height: "360px" }}>
+            <div className="ticket-details-img-box">
               <img
                 src={ticket.image}
                 alt={ticket.title}
@@ -290,10 +290,10 @@ export default function TicketDetailsPage() {
 
             {/* Title & Route */}
             <div style={{ marginBottom: "24px" }}>
-              <h1 style={{ fontSize: "2rem", fontWeight: "900", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", lineHeight: "1.2", marginBottom: "12px" }}>
+              <h1 className="ticket-title-responsive" style={{ fontSize: "2rem", fontWeight: "900", color: "var(--text-primary)", fontFamily: "Space Grotesk, sans-serif", lineHeight: "1.2", marginBottom: "12px" }}>
                 {ticket.title}
               </h1>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "16px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", fontSize: "16px", flexWrap: "wrap" }}>
                 <FaMapMarkerAlt color="#00d4ff" />
                 <span style={{ color: "#00d4ff", fontWeight: "700" }}>{ticket.from}</span>
                 <span style={{ color: "var(--text-muted)", fontSize: "20px" }}>→</span>
@@ -302,7 +302,7 @@ export default function TicketDetailsPage() {
             </div>
 
             {/* Info grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "16px", marginBottom: "28px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "12px", marginBottom: "28px" }}>
               {[
                 { label: "Departure", value: format(new Date(ticket.departureDate), "dd MMM yyyy, hh:mm a"), icon: <FaClock size={16} color="#f59e0b" /> },
                 { label: "Available Seats", value: `${ticket.quantity} seats`, icon: <MdAirlineSeatReclineNormal size={16} color="#10b981" /> },
@@ -338,7 +338,7 @@ export default function TicketDetailsPage() {
 
           {/* Right: Booking card */}
           <div>
-            <div className="glass-card" style={{ padding: "28px", position: "sticky", top: "90px" }}>
+            <div className="glass-card ticket-details-sidebar" style={{ padding: "24px" }}>
               <div style={{ fontSize: "2rem", fontWeight: "900", color: "#00d4ff", fontFamily: "Space Grotesk, sans-serif", marginBottom: "4px" }}>
                 ৳{ticket.price?.toLocaleString()}
               </div>

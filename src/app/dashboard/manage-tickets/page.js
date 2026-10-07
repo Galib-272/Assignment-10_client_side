@@ -301,8 +301,8 @@ export default function ManageTicketsPage() {
 
       {/* Tickets Table / List */}
       <div className="card" style={{ padding: "0", overflow: "hidden" }}>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "14px" }}>
+        <div className="table-responsive-wrapper">
+          <table style={{ width: "100%", minWidth: "760px", borderCollapse: "collapse", fontSize: "14px" }}>
             <thead>
               <tr style={{ background: "rgba(255, 255, 255, 0.02)", borderBottom: "1px solid var(--border-color)", textAlign: "left", color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase" }}>
                 <th style={{ padding: "16px" }}>Ticket Info</th>
