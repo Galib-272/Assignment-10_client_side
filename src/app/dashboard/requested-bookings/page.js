@@ -6,9 +6,9 @@ import toast from "react-hot-toast";
 import { FaCheck, FaTimes, FaClipboardList } from "react-icons/fa";
 
 const mockRequests = [
-  { _id: "r1", userId: { name: "Rahim Uddin", email: "rahim@email.com" }, ticketId: { title: "Dhaka to Chittagong", price: 850 }, quantity: 2, status: "pending" },
-  { _id: "r2", userId: { name: "Karim Hossain", email: "karim@email.com" }, ticketId: { title: "Dhaka to Sylhet", price: 450 }, quantity: 3, status: "pending" },
-  { _id: "r3", userId: { name: "Fatima Begum", email: "fatima@email.com" }, ticketId: { title: "Dhaka to Cox's Bazar", price: 1200 }, quantity: 1, status: "accepted" },
+  { _id: "r1", userId: { name: "Rahim Uddin", email: "rahim@email.com", image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop" }, userName: "Rahim Uddin", userEmail: "rahim@email.com", userImage: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop", ticketId: { title: "Dhaka to Chittagong", price: 850 }, quantity: 2, status: "pending" },
+  { _id: "r2", userId: { name: "Karim Hossain", email: "karim@email.com", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" }, userName: "Karim Hossain", userEmail: "karim@email.com", userImage: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop", ticketId: { title: "Dhaka to Sylhet", price: 450 }, quantity: 3, status: "pending" },
+  { _id: "r3", userId: { name: "Fatima Begum", email: "fatima@email.com", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" }, userName: "Fatima Begum", userEmail: "fatima@email.com", userImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop", ticketId: { title: "Dhaka to Cox's Bazar", price: 1200 }, quantity: 1, status: "accepted" },
 ];
 
 export default function RequestedBookingsPage() {
@@ -79,11 +79,34 @@ export default function RequestedBookingsPage() {
               <tbody>
                 {requests.map((req) => {
                   const total = req.ticketId?.price * req.quantity;
+                  const userName = req.userName || req.userId?.name || "Customer";
+                  const userEmail = req.userEmail || req.userId?.email || "";
+                  const userImage = req.userImage || req.userId?.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0F1629&color=00D4FF`;
+
                   return (
                     <tr key={req._id}>
                       <td>
-                        <div style={{ fontWeight: "600", color: "var(--text-primary)" }}>{req.userId?.name}</div>
-                        <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{req.userId?.email}</div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                          <img
+                            src={userImage}
+                            alt={userName}
+                            onError={(e) => {
+                              e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0F1629&color=00D4FF`;
+                            }}
+                            style={{
+                              width: "38px",
+                              height: "38px",
+                              borderRadius: "50%",
+                              objectFit: "cover",
+                              border: "1px solid var(--border-color)",
+                              flexShrink: 0,
+                            }}
+                          />
+                          <div>
+                            <div style={{ fontWeight: "600", color: "var(--text-primary)" }}>{userName}</div>
+                            <div style={{ fontSize: "12px", color: "var(--text-muted)" }}>{userEmail}</div>
+                          </div>
+                        </div>
                       </td>
                       <td style={{ fontWeight: "500", maxWidth: "200px" }}>{req.ticketId?.title}</td>
                       <td style={{ fontWeight: "700" }}>{req.quantity}</td>

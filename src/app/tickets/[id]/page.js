@@ -64,13 +64,14 @@ function BookingModal({ ticket, onClose, onSuccess }) {
     try {
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/bookings`,
-        { ticketId: ticket._id, quantity: qty },
+        { ticketId: ticket._id, quantity: qty, userImage: session?.user?.image || "" },
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
             "x-user-email": session?.user?.email || "",
             "x-user-role": session?.user?.role || "",
             "x-user-name": session?.user?.name || "",
+            "x-user-image": session?.user?.image || "",
           },
         }
       );
