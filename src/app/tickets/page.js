@@ -49,7 +49,13 @@ function TicketsContent() {
       });
       const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/tickets?${params}`);
       if (res.data?.tickets && res.data.tickets.length > 0) {
-        setTickets(res.data.tickets);
+        let loaded = [...res.data.tickets];
+        if (sort === "price-asc" || sort === "asc") {
+          loaded.sort((a, b) => Number(a.price) - Number(b.price));
+        } else if (sort === "price-desc" || sort === "desc") {
+          loaded.sort((a, b) => Number(b.price) - Number(a.price));
+        }
+        setTickets(loaded);
         setTotalPages(res.data.totalPages || 1);
       } else {
         throw new Error("No tickets in DB");
@@ -59,8 +65,8 @@ function TicketsContent() {
       if (search.from) filtered = filtered.filter(t => t.from.toLowerCase().includes(search.from.toLowerCase()));
       if (search.to) filtered = filtered.filter(t => t.to.toLowerCase().includes(search.to.toLowerCase()));
       if (transport !== "All") filtered = filtered.filter(t => t.transportType?.toLowerCase() === transport.toLowerCase());
-      if (sort === "asc" || sort === "price-asc") filtered.sort((a, b) => a.price - b.price);
-      if (sort === "desc" || sort === "price-desc") filtered.sort((a, b) => b.price - a.price);
+      if (sort === "price-asc" || sort === "asc") filtered.sort((a, b) => Number(a.price) - Number(b.price));
+      if (sort === "price-desc" || sort === "desc") filtered.sort((a, b) => Number(b.price) - Number(a.price));
       setTotalPages(Math.ceil(filtered.length / PAGE_SIZE));
       setTickets(filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE));
     } finally {
@@ -150,30 +156,77 @@ function TicketsContent() {
                 {t}
               </button>
             ))}
-            <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px" }}>
+            <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
               <span style={{ fontSize: "13px", color: "var(--text-secondary)", fontWeight: "600" }}>Sort:</span>
               <button
-                onClick={() => setSort(s => s === "asc" ? "desc" : s === "desc" ? "none" : "asc")}
+                type="button"
+                id="sort-price-low-to-high"
+                onClick={() => {
+                  setSort(s => s === "price-asc" ? "none" : "price-asc");
+                  setPage(1);
+                }}
                 style={{
-                  display: "flex",
+                  display: "inline-flex",
                   alignItems: "center",
                   gap: "6px",
                   padding: "6px 14px",
                   borderRadius: "8px",
-                  border: `1.5px solid ${sort !== "none" ? "rgba(0,212,255,0.5)" : "var(--border-color)"}`,
-                  background: sort !== "none" ? "rgba(0,212,255,0.1)" : "transparent",
-                  color: sort !== "none" ? "#00d4ff" : "var(--text-secondary)",
+                  border: `1.5px solid ${sort === "price-asc" ? "rgba(0,212,255,0.6)" : "var(--border-color)"}`,
+                  background: sort === "price-asc" ? "rgba(0,212,255,0.15)" : "transparent",
+                  color: sort === "price-asc" ? "#00d4ff" : "var(--text-secondary)",
                   fontSize: "13px",
                   fontWeight: "600",
                   cursor: "pointer",
                   fontFamily: "Outfit, sans-serif",
+                  transition: "all 0.2s",
                 }}
               >
-                {sort === "asc" ? <FaSortAmountUp size={12} /> : <FaSortAmountDown size={12} />}
-                Price {sort === "asc" ? "↑" : sort === "desc" ? "↓" : ""}
+                <FaSortAmountUp size={11} /> Price: Low to High
+              </button>
+              <button
+                type="button"
+                id="sort-price-high-to-low"
+                onClick={() => {
+                  setSort(s => s === "price-desc" ? "none" : "price-desc");
+                  setPage(1);
+                }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "6px 14px",
+                  borderRadius: "8px",
+                  border: `1.5px solid ${sort === "price-desc" ? "rgba(0,212,255,0.6)" : "var(--border-color)"}`,
+                  background: sort === "price-desc" ? "rgba(0,212,255,0.15)" : "transparent",
+                  color: sort === "price-desc" ? "#00d4ff" : "var(--text-secondary)",
+                  fontSize: "13px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  fontFamily: "Outfit, sans-serif",
+                  transition: "all 0.2s",
+                }}
+              >
+                <FaSortAmountDown size={11} /> Price: High to Low
               </button>
               {(search.from || search.to || transport !== "All" || sort !== "none") && (
-                <button onClick={clearFilters} style={{ display: "flex", alignItems: "center", gap: "5px", padding: "6px 12px", borderRadius: "8px", border: "1.5px solid rgba(239,68,68,0.3)", background: "rgba(239,68,68,0.08)", color: "#ef4444", fontSize: "12px", fontWeight: "600", cursor: "pointer", fontFamily: "Outfit, sans-serif" }}>
+                <button
+                  type="button"
+                  onClick={clearFilters}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "5px",
+                    padding: "6px 12px",
+                    borderRadius: "8px",
+                    border: "1.5px solid rgba(239,68,68,0.3)",
+                    background: "rgba(239,68,68,0.08)",
+                    color: "#ef4444",
+                    fontSize: "12px",
+                    fontWeight: "600",
+                    cursor: "pointer",
+                    fontFamily: "Outfit, sans-serif"
+                  }}
+                >
                   <FaTimes size={11} /> Clear
                 </button>
               )}
