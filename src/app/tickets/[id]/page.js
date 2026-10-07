@@ -65,7 +65,14 @@ function BookingModal({ ticket, onClose, onSuccess }) {
       await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/bookings`,
         { ticketId: ticket._id, quantity: qty },
-        { headers: { Authorization: `Bearer ${session?.accessToken}` } }
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "x-user-email": session?.user?.email || "",
+            "x-user-role": session?.user?.role || "",
+            "x-user-name": session?.user?.name || "",
+          },
+        }
       );
       toast.success("Booking submitted! Check your dashboard.");
       onSuccess();
