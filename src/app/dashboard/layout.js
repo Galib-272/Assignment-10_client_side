@@ -13,7 +13,6 @@ import { signOut } from "next-auth/react";
 const userLinks = [
   { href: "/dashboard/profile", icon: <FaUser size={15} />, label: "My Profile" },
   { href: "/dashboard/my-bookings", icon: <FaTicketAlt size={15} />, label: "My Bookings" },
-  { href: "/dashboard/payment", icon: <FaCreditCard size={15} />, label: "Payment" },
   { href: "/dashboard/transactions", icon: <FaHistory size={15} />, label: "Transactions" },
 ];
 
