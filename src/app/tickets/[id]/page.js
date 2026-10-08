@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Link from "next/link";
-import { FaBus, FaTrain, FaPlane, FaShip, FaMapMarkerAlt, FaClock, FaArrowLeft, FaLock } from "react-icons/fa";
+import { FaBus, FaTrain, FaPlane, FaShip, FaMapMarkerAlt, FaClock, FaArrowLeft, FaLock, FaCheck, FaTimes } from "react-icons/fa";
 import { MdAirlineSeatReclineNormal } from "react-icons/md";
 import { format, isPast, differenceInSeconds } from "date-fns";
 
@@ -204,6 +204,7 @@ export default function TicketDetailsPage() {
   const [ticket, setTicket] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(null);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -231,6 +232,29 @@ export default function TicketDetailsPage() {
     };
     if (id) fetchTicket();
   }, [id, status]);
+
+  const handleVerification = async (newStatus) => {
+    setUpdatingStatus(newStatus);
+    try {
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/tickets/${id}/status`,
+        { verificationStatus: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            "x-user-email": session?.user?.email || "",
+            "x-user-role": session?.user?.role || "",
+          },
+        }
+      );
+      setTicket((prev) => ({ ...prev, verificationStatus: newStatus }));
+      toast.success(`Ticket ${newStatus === "approved" ? "approved" : "rejected"} successfully!`);
+    } catch (err) {
+      toast.error(err.response?.data?.message || `Failed to ${newStatus} ticket`);
+    } finally {
+      setUpdatingStatus(null);
+    }
+  };
 
   if (status === "loading" || status === "unauthenticated" || loading) {
     return (
@@ -363,7 +387,97 @@ export default function TicketDetailsPage() {
                 ))}
               </div>
 
-              {!session ? (
+              {/* === ADMIN: Approve / Reject === */}
+              {session?.user?.role === "admin" ? (
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  {/* Current status badge */}
+                  <div style={{
+                    padding: "8px 14px",
+                    borderRadius: "10px",
+                    textAlign: "center",
+                    fontSize: "13px",
+                    fontWeight: "700",
+                    background:
+                      ticket.verificationStatus === "approved" ? "rgba(16,185,129,0.12)" :
+                      ticket.verificationStatus === "rejected" ? "rgba(239,68,68,0.12)" :
+                      "rgba(245,158,11,0.12)",
+                    color:
+                      ticket.verificationStatus === "approved" ? "#10b981" :
+                      ticket.verificationStatus === "rejected" ? "#ef4444" :
+                      "#f59e0b",
+                    border: `1px solid ${
+                      ticket.verificationStatus === "approved" ? "rgba(16,185,129,0.3)" :
+                      ticket.verificationStatus === "rejected" ? "rgba(239,68,68,0.3)" :
+                      "rgba(245,158,11,0.3)"
+                    }`,
+                  }}>
+                    Status: {ticket.verificationStatus?.toUpperCase() ?? "PENDING"}
+                  </div>
+
+                  {/* Approve button */}
+                  <button
+                    onClick={() => handleVerification("approved")}
+                    disabled={updatingStatus !== null || ticket.verificationStatus === "approved"}
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      padding: "13px",
+                      borderRadius: "12px",
+                      fontWeight: "700",
+                      fontSize: "15px",
+                      cursor: updatingStatus !== null || ticket.verificationStatus === "approved" ? "not-allowed" : "pointer",
+                      opacity: ticket.verificationStatus === "approved" ? 0.5 : 1,
+                      background: "rgba(16,185,129,0.15)",
+                      color: "#10b981",
+                      border: "1px solid rgba(16,185,129,0.4)",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    {updatingStatus === "approved" ? (
+                      <><div className="spinner" style={{ width: "16px", height: "16px", borderWidth: "2px" }} /> Approving...</>
+                    ) : (
+                      <><FaCheck size={13} /> Approve Ticket</>
+                    )}
+                  </button>
+
+                  {/* Reject button */}
+                  <button
+                    onClick={() => handleVerification("rejected")}
+                    disabled={updatingStatus !== null || ticket.verificationStatus === "rejected"}
+                    style={{
+                      width: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: "8px",
+                      padding: "13px",
+                      borderRadius: "12px",
+                      fontWeight: "700",
+                      fontSize: "15px",
+                      cursor: updatingStatus !== null || ticket.verificationStatus === "rejected" ? "not-allowed" : "pointer",
+                      opacity: ticket.verificationStatus === "rejected" ? 0.5 : 1,
+                      background: "rgba(239,68,68,0.12)",
+                      color: "#ef4444",
+                      border: "1px solid rgba(239,68,68,0.35)",
+                      transition: "all 0.2s",
+                    }}
+                  >
+                    {updatingStatus === "rejected" ? (
+                      <><div className="spinner" style={{ width: "16px", height: "16px", borderWidth: "2px" }} /> Rejecting...</>
+                    ) : (
+                      <><FaTimes size={13} /> Reject Ticket</>
+                    )}
+                  </button>
+
+                  <p style={{ textAlign: "center", color: "var(--text-muted)", fontSize: "12px" }}>
+                    You are viewing as Admin
+                  </p>
+                </div>
+
+              ) : !session ? (
                 <Link href={`/login?callbackUrl=/tickets/${id}`}>
                   <button className="btn-primary" style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
                     <FaLock size={13} /> Login to Book
@@ -392,12 +506,12 @@ export default function TicketDetailsPage() {
                 </button>
               )}
 
-              {isExpired && (
+              {isExpired && session?.user?.role !== "admin" && (
                 <p style={{ textAlign: "center", color: "var(--color-error)", fontSize: "12px", marginTop: "10px" }}>
                   This ticket has expired
                 </p>
               )}
-              {isOutOfStock && !isExpired && (
+              {isOutOfStock && !isExpired && session?.user?.role !== "admin" && (
                 <p style={{ textAlign: "center", color: "var(--color-error)", fontSize: "12px", marginTop: "10px" }}>
                   No seats available
                 </p>
