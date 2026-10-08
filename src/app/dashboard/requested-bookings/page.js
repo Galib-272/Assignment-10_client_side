@@ -112,20 +112,24 @@ export default function RequestedBookingsPage() {
                       <td style={{ fontWeight: "700" }}>{req.quantity}</td>
                       <td style={{ color: "#00d4ff", fontWeight: "700" }}>৳{total?.toLocaleString()}</td>
                       <td>
-                        <span className={`badge ${req.status === "accepted" ? "badge-accepted" : req.status === "rejected" ? "badge-rejected" : "badge-pending"}`}>
+                        <span className={`badge ${req.status === "paid" ? "badge-paid" : req.status === "accepted" ? "badge-accepted" : req.status === "rejected" ? "badge-rejected" : "badge-pending"}`}>
                           {req.status}
                         </span>
                       </td>
                       <td>
-                        {req.status === "pending" && (
+                        {req.status === "pending" ? (
                           <div style={{ display: "flex", gap: "8px", whiteSpace: "nowrap" }}>
-                            <button onClick={() => handleAction(req._id, "accepted")} className="btn-success" style={{ display: "flex", alignItems: "center", gap: "5px", padding: "7px 14px", fontSize: "12px" }}>
+                            <button onClick={() => handleAction(req._id, "accepted")} className="btn-success" style={{ display: "flex", alignItems: "center", gap: "5px", padding: "7px 14px", fontSize: "12px", cursor: "pointer" }}>
                               <FaCheck size={11} /> Accept
                             </button>
-                            <button onClick={() => handleAction(req._id, "rejected")} className="btn-danger" style={{ display: "flex", alignItems: "center", gap: "5px", padding: "7px 14px", fontSize: "12px" }}>
+                            <button onClick={() => handleAction(req._id, "rejected")} className="btn-danger" style={{ display: "flex", alignItems: "center", gap: "5px", padding: "7px 14px", fontSize: "12px", cursor: "pointer" }}>
                               <FaTimes size={11} /> Reject
                             </button>
                           </div>
+                        ) : (
+                          <span style={{ fontSize: "12px", color: "var(--text-muted)", textTransform: "capitalize" }}>
+                            {req.status === "paid" ? "✓ Paid" : `Marked as ${req.status}`}
+                          </span>
                         )}
                       </td>
                     </tr>
