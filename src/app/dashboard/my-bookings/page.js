@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import Link from "next/link";
 import axios from "axios";
 import { format, isPast, differenceInSeconds } from "date-fns";
 import toast from "react-hot-toast";
@@ -219,20 +220,23 @@ export default function MyBookingsPage() {
 
                   <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
                     {booking.status === "accepted" && !departed && (
-                      <button
-                        onClick={() => handlePay(booking)}
-                        disabled={payingId === booking._id}
+                      <Link
+                        href={`/dashboard/payment?bookingId=${booking._id}`}
                         className="btn-success"
                         style={{
                           flex: 1,
                           fontSize: "13px",
                           padding: "9px",
-                          opacity: payingId === booking._id ? 0.7 : 1,
-                          cursor: payingId === booking._id ? "not-allowed" : "pointer",
+                          textDecoration: "none",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "6px",
+                          fontWeight: "700",
                         }}
                       >
-                        {payingId === booking._id ? "Processing..." : "💳 Pay Now"}
-                      </button>
+                        💳 Pay Now
+                      </Link>
                     )}
                     {booking.status === "pending" && (
                       <button onClick={() => handleCancel(booking._id)} className="btn-danger" style={{ flex: 1, fontSize: "13px", padding: "9px" }}>
