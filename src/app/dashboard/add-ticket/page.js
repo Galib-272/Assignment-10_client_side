@@ -1,10 +1,10 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { FaImage, FaUpload, FaTrashAlt, FaLink } from "react-icons/fa";
+import { FaImage, FaUpload, FaTrashAlt, FaLink, FaBan } from "react-icons/fa";
 
 const TRANSPORT_OPTIONS = ["Bus", "Train", "Plane", "Launch"];
 const PERKS_OPTIONS = [
@@ -31,12 +31,30 @@ export default function AddTicketPage() {
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [customUrl, setCustomUrl] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isFraud, setIsFraud] = useState(false);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm();
+
+  // Check if this vendor is marked as fraud
+  useEffect(() => {
+    if (!session?.accessToken) return;
+    axios
+      .get(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${session.accessToken}`,
+          "x-user-email": session?.user?.email || "",
+          "x-user-role": session?.user?.role || "",
+        },
+      })
+      .then((res) => {
+        if (res.data?.isFraud) setIsFraud(true);
+      })
+      .catch(() => {});
+  }, [session]);
 
   const togglePerk = (p) => {
     setPerks((prev) =>
@@ -218,17 +236,70 @@ export default function AddTicketPage() {
       setPerks([]);
       setImageUrl("");
     } catch (err) {
-      console.error("Ticket submission error details:", err.response?.data || err);
+      // Extract error message robustly — handles empty objects, network errors, and 403s
+      const responseData = err.response?.data;
       const msg =
-        err.response?.data?.error ||
-        err.response?.data?.message ||
+        (typeof responseData === "object" && responseData !== null
+          ? responseData.message || responseData.error
+          : null) ||
         err.message ||
         "Failed to add ticket";
+      console.error("Ticket submission error:", msg, err.response?.status);
       toast.error(msg);
     } finally {
       setLoading(false);
     }
   };
+
+  // Show blocked UI if this vendor is marked as fraud
+  if (isFraud) {
+    return (
+      <div style={{ maxWidth: "800px", margin: "0 auto" }}>
+        <div
+          className="card"
+          style={{
+            padding: "60px 40px",
+            textAlign: "center",
+            border: "1px solid rgba(239, 68, 68, 0.3)",
+            background: "rgba(239, 68, 68, 0.05)",
+          }}
+        >
+          <div
+            style={{
+              width: "72px",
+              height: "72px",
+              borderRadius: "50%",
+              background: "rgba(239, 68, 68, 0.15)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "0 auto 24px",
+              border: "1px solid rgba(239, 68, 68, 0.3)",
+            }}
+          >
+            <FaBan size={32} color="#ef4444" />
+          </div>
+          <h2
+            style={{
+              fontSize: "22px",
+              fontWeight: "800",
+              color: "#ef4444",
+              fontFamily: "Space Grotesk, sans-serif",
+              marginBottom: "12px",
+            }}
+          >
+            Account Suspended
+          </h2>
+          <p style={{ color: "var(--text-secondary)", fontSize: "15px", maxWidth: "420px", margin: "0 auto 8px" }}>
+            Your vendor account has been flagged as <strong style={{ color: "#ef4444" }}>fraudulent</strong> by an administrator.
+          </p>
+          <p style={{ color: "var(--text-muted)", fontSize: "13px" }}>
+            You can no longer add or modify tickets. Please contact support if you believe this is a mistake.
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto" }}>

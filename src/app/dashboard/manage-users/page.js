@@ -11,7 +11,9 @@ import {
   FaFilter,
   FaCheck,
   FaEllipsisV,
-  FaTrash
+  FaTrash,
+  FaBan,
+  FaCheckCircle
 } from "react-icons/fa";
 
 const mockUsers = [
@@ -72,6 +74,7 @@ export default function ManageUsersPage() {
   const [search, setSearch] = useState("");
   const [filterRole, setFilterRole] = useState("all");
   const [updatingUserId, setUpdatingUserId] = useState(null);
+  const [fraudUpdatingUserId, setFraudUpdatingUserId] = useState(null);
 
   const fetchUsers = async () => {
     try {
@@ -109,6 +112,30 @@ export default function ManageUsersPage() {
       toast.success(`Role updated to ${newRole} (Simulated)`);
     } finally {
       setUpdatingUserId(null);
+    }
+  };
+
+  const handleFraudToggle = async (userId, currentFraud) => {
+    const newFraud = !currentFraud;
+    setFraudUpdatingUserId(userId);
+    try {
+      await axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/admin/users/${userId}/fraud`,
+        { isFraud: newFraud },
+        { headers: { Authorization: `Bearer ${session?.accessToken}`, "x-user-email": session?.user?.email || "", "x-user-role": session?.user?.role || "" } }
+      );
+      toast.success(newFraud ? "Vendor marked as fraud. All their tickets are hidden." : "Fraud flag removed from vendor.");
+      setUsers((prev) =>
+        prev.map((u) => (u._id === userId ? { ...u, isFraud: newFraud } : u))
+      );
+    } catch {
+      // Simulate locally
+      setUsers((prev) =>
+        prev.map((u) => (u._id === userId ? { ...u, isFraud: newFraud } : u))
+      );
+      toast.success(newFraud ? "Vendor marked as fraud (Simulated)" : "Fraud flag removed (Simulated)");
+    } finally {
+      setFraudUpdatingUserId(null);
     }
   };
 
@@ -208,6 +235,10 @@ export default function ManageUsersPage() {
         <div className="card" style={{ padding: "18px" }}>
           <div style={{ color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase", fontWeight: "600", marginBottom: "6px" }}>Standard Users</div>
           <div className="stat-value" style={{ fontSize: "24px", fontWeight: "800", color: "#10b981", fontFamily: "Space Grotesk, sans-serif" }}>{users.filter(u => u.role === "user").length}</div>
+        </div>
+        <div className="card" style={{ padding: "18px" }}>
+          <div style={{ color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase", fontWeight: "600", marginBottom: "6px" }}>Fraudulent Vendors</div>
+          <div className="stat-value" style={{ fontSize: "24px", fontWeight: "800", color: "#ef4444", fontFamily: "Space Grotesk, sans-serif" }}>{users.filter(u => u.isFraud).length}</div>
         </div>
       </div>
 
@@ -312,12 +343,30 @@ export default function ManageUsersPage() {
 
                     {/* Role Badge */}
                     <td style={{ padding: "16px" }}>
-                      {getRoleBadge(user.role)}
+                      <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+                        {getRoleBadge(user.role)}
+                        {user.isFraud && (
+                          <span style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "4px",
+                            padding: "3px 8px",
+                            borderRadius: "999px",
+                            fontSize: "11px",
+                            fontWeight: "700",
+                            background: "rgba(239, 68, 68, 0.15)",
+                            color: "#ef4444",
+                            border: "1px solid rgba(239, 68, 68, 0.4)"
+                          }}>
+                            <FaBan size={9} /> FRAUD
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Actions */}
                     <td style={{ padding: "16px" }}>
-                      <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                      <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap" }}>
                         <select
                           value={user.role}
                           onChange={(e) => handleRoleChange(user._id, e.target.value)}
@@ -340,6 +389,37 @@ export default function ManageUsersPage() {
 
                         {updatingUserId === user._id && (
                           <span style={{ fontSize: "12px", color: "var(--color-primary)" }}>Updating...</span>
+                        )}
+
+                        {/* Mark as Fraud button — only for vendors */}
+                        {user.role === "vendor" && (
+                          <button
+                            onClick={() => handleFraudToggle(user._id, user.isFraud)}
+                            disabled={fraudUpdatingUserId === user._id}
+                            title={user.isFraud ? "Remove fraud flag" : "Mark this vendor as fraud"}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "6px",
+                              padding: "6px 12px",
+                              borderRadius: "8px",
+                              fontSize: "12px",
+                              fontWeight: "700",
+                              cursor: fraudUpdatingUserId === user._id ? "not-allowed" : "pointer",
+                              border: "none",
+                              transition: "all 0.2s ease",
+                              opacity: fraudUpdatingUserId === user._id ? 0.6 : 1,
+                              background: user.isFraud
+                                ? "rgba(16, 185, 129, 0.15)"
+                                : "rgba(239, 68, 68, 0.15)",
+                              color: user.isFraud ? "#10b981" : "#ef4444",
+                              boxShadow: user.isFraud
+                                ? "0 0 0 1px rgba(16, 185, 129, 0.4)"
+                                : "0 0 0 1px rgba(239, 68, 68, 0.4)",
+                            }}
+                          >
+                            {user.isFraud ? <><FaCheckCircle size={11} /> Remove Fraud</> : <><FaBan size={11} /> Mark as Fraud</>}
+                          </button>
                         )}
                       </div>
                     </td>
