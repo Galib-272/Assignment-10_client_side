@@ -96,8 +96,25 @@ function TicketsContent() {
       <div style={{ maxWidth: "1280px", margin: "0 auto", padding: "32px 24px" }}>
         {/* Search & Filters */}
         <div className="glass-card" style={{ padding: "24px", marginBottom: "32px" }}>
+          <style>{`
+            .ticket-search-grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr auto;
+              gap: 12px;
+              align-items: end;
+            }
+            @media (max-width: 600px) {
+              .ticket-search-grid {
+                grid-template-columns: 1fr;
+              }
+              .ticket-search-grid .search-btn {
+                width: 100%;
+                justify-content: center;
+              }
+            }
+          `}</style>
           <form onSubmit={handleSearch}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr auto", gap: "12px", alignItems: "end", flexWrap: "wrap" }}>
+            <div className="ticket-search-grid">
               <div>
                 <label className="form-label">From</label>
                 <div style={{ position: "relative" }}>
@@ -124,7 +141,7 @@ function TicketsContent() {
                   />
                 </div>
               </div>
-              <button type="submit" className="btn-primary" style={{ height: "44px", display: "flex", alignItems: "center", gap: "8px", padding: "0 24px" }}>
+              <button type="submit" className="btn-primary search-btn" style={{ height: "44px", display: "flex", alignItems: "center", gap: "8px", padding: "0 24px" }}>
                 <FaSearch size={13} /> Search
               </button>
             </div>
