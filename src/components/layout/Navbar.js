@@ -23,8 +23,6 @@ export default function Navbar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  if (pathname?.startsWith("/dashboard/payment")) return null;
-
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", onScroll);
@@ -42,6 +40,8 @@ export default function Navbar() {
   }, []);
 
   const isDark = theme === "dark";
+
+  if (pathname?.startsWith("/dashboard/payment")) return null;
 
   return (
     <nav
