@@ -86,6 +86,11 @@ export default function DashboardLayout({ children }) {
 
   if (!session) return null;
 
+  // Standalone white Stripe Checkout page
+  if (pathname?.startsWith("/dashboard/payment")) {
+    return <div style={{ minHeight: "100vh", background: "#ffffff", color: "#0f172a" }}>{children}</div>;
+  }
+
   const role = session.user?.role || "user";
   const links = getRoleLinks(role);
 

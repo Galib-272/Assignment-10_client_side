@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useSession, signOut } from "next-auth/react";
 import { useTheme } from "@/providers/ThemeProvider";
 import {
@@ -14,12 +15,15 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname();
   const { data: session } = useSession();
   const { theme, toggleTheme } = useTheme();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  if (pathname?.startsWith("/dashboard/payment")) return null;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);

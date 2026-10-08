@@ -1,10 +1,14 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FaBus, FaEnvelope, FaPhone, FaFacebook, FaCreditCard, FaStripe } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 
 export default function Footer() {
+  const pathname = usePathname();
   const currentYear = new Date().getFullYear();
+
+  if (pathname?.startsWith("/dashboard/payment")) return null;
 
   return (
     <footer
